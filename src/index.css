@@ -1,0 +1,101 @@
+@import "tailwindcss";
+@plugin "daisyui";
+@custom-variant dark (&:where(.dark, .dark *));
+
+.custom-select__menu,
+.custom-select__option,
+.custom-select__single-value,
+.custom-select__multi-value__label {
+  color: #1e293b !important; /* Pastikan teks hitam */
+  opacity: 1 !important; /* Kadang DaisyUI men-set opacity rendah */
+  background-color: white !important; /* Untuk memastikan background gak gelap */
+}
+
+.custom-select__menu-list {
+  background-color: white !important;
+  color: #1e293b !important;
+}
+
+.custom-select__control {
+  background-color: white !important;
+  color: #1e293b !important;
+}
+/* 🔹 Custom Tooltip */
+.custom-intro-tooltip {
+  max-width: 340px;
+  background-color: #ffffff;
+  color: #111827;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 20px 18px;
+  border: 1px solid #e5e7eb;
+  position: relative;
+}
+
+/* 🔹 Header dalam tooltip */
+.custom-intro-tooltip .introjs-tooltip-title {
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  color: #111827;
+}
+
+.custom-intro-tooltip .introjs-tooltiptext {
+  font-size: 14px;
+  color: #4b5563; /* abu-abu elegan */
+}
+
+/* 🔹 Arrow */
+.custom-intro-tooltip .introjs-arrow {
+  border-right-color: #ffffff !important;
+}
+
+/* 🔹 Progress bar */
+.introjs-progress {
+  height: 4px !important;
+  background-color: #e5e7eb;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+.introjs-progressbar {
+  background-color: #2563eb !important;
+  border-radius: 8px;
+}
+
+/* 🔹 Button styling */
+.introjs-button {
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  padding: 6px 14px !important;
+  border: none !important;
+}
+
+.introjs-nextbutton {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+.introjs-nextbutton:hover {
+  background-color: #1d4ed8 !important;
+}
+
+.introjs-prevbutton {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+.introjs-prevbutton:hover {
+  background-color: #e5e7eb !important;
+}
+
+/* 🔹 Skip jadi mirip link */
+.introjs-skipbutton {
+  background: none !important;
+  color: #6b7280 !important;
+  font-weight: 500 !important;
+  text-decoration: underline;
+  margin-right: auto !important;
+}

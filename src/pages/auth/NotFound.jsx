@@ -1,0 +1,21 @@
+import { Link } from "react-router-dom";
+import { AlertCircle } from "lucide-react";
+
+export default function NotFound() {
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-slate-900 text-slate-800 dark:text-white p-4">
+      <div className="text-center max-w-md">
+        <AlertCircle className="w-16 h-16 mx-auto text-red-500 mb-4" />
+        <h1 className="text-4xl font-bold mb-2">
+          404 - Halaman Tidak Ditemukan
+        </h1>
+        <p className="mb-6 text-sm text-slate-600 dark:text-slate-300">
+          Maaf, halaman yang kamu cari tidak tersedia atau telah dipindahkan.
+        </p>
+        <Link to="/login" className="btn btn-sm btn-primary normal-case">
+          Kembali ke halaman Login
+        </Link>
+      </div>
+    </div>
+  );
+}

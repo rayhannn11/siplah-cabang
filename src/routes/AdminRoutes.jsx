@@ -12,6 +12,7 @@ const DetailPayment = lazy(() => import("../pages/finance/DetailPayment"));
 
 // Master
 const Mitra = lazy(() => import("../pages/master/Mitra"));
+const MitraDetail = lazy(() => import("../pages/master/MitraDetail"));
 const MitraHistory = lazy(() => import("../pages/master/MitraHistory"));
 const MitraNonAktif = lazy(() => import("../pages/master/MitraNonAktive"));
 const PaymentsReport = lazy(() => import("../pages/master/PaymentsReport"));
@@ -65,6 +66,10 @@ const AdminRoutes = () => {
     {
       path: "/rekanan/order/:id",
       element: <DetailOrder mode="mitraDetailOrder" />,
+    },
+    {
+      path: "/rekanan/detail/:id",
+      element: <MitraDetail />,
     },
     { path: "/rekanan/history", element: <MitraHistory /> },
     { path: "/rekanan/nonaktif", element: <MitraNonAktif /> },

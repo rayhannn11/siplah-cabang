@@ -76,6 +76,17 @@ const Mitra = () => {
       nama_pic: item.nama_pic,
       kota: item.kota,
       approve: item.approve,
+      actions: (
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // 🔥 mencegah trigger redirect row
+            window.location.href = `/orders?rekanan=${item.mall_id}`;
+          }}
+          className="btn btn-sm bg-[#FFC107] text-black text-nowrap hover:bg-[#e9b825]"
+        >
+          Lihat Pesanan
+        </button>
+      ),
     }));
   }, [data]);
 
@@ -142,7 +153,7 @@ const Mitra = () => {
 
           // 👇 callback ketika diklik
           onRowRedirect: (row) => {
-            window.location.href = `/orders?rekanan=${row.mall_id}`;
+            window.location.href = `/rekanan/detail/${row.mall_id}`;
           },
         }}
       />

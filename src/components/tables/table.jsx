@@ -397,6 +397,7 @@ const Table = ({
                   // 🚫 sembunyikan kolom id
                   if (columnId === "id") return null;
                   if (columnId === "mall_id") return null;
+                  if (columnId === "actions") return null;
 
                   const headerClass =
                     tableStyleMapping?.header?.(columnId) || "";

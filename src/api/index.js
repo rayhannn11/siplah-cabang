@@ -135,6 +135,11 @@ export const fetchPartnersActive = async ({
   return res.data;
 };
 
+export const fetchPartnerDetail = async (id) => {
+  const res = await axios.get(`partners/detail/${id}`);
+  return res.data;
+};
+
 export const fetchPartnersHistory = async ({
   page = 1,
   limit = 10,

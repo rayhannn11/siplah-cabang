@@ -201,7 +201,7 @@ export const adminNavigation = [
         tourId: "menu-rekanan-active", // ✅
       },
       {
-        name: "Rekanan Inaktif",
+        name: "Rekanan Nonaktif",
         href: "/rekanan/nonaktif",
         icon: ShieldAlert,
         tourId: "menu-rekanan-inactive", // ✅

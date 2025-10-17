@@ -8,10 +8,9 @@ import Swal from "sweetalert2";
 
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const { isMobile, isTablet, isDesktop } = useResponsive();
-  const { logout } = useAuthStore();
+  const { logout, user } = useAuthStore();
 
   const [openMenu, setOpenMenu] = useState(null);
-
   const toggleMenu = (menuKey) => {
     setOpenMenu(openMenu === menuKey ? null : menuKey);
   };
@@ -220,7 +219,9 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               className="h-10 w-12 rounded-full bg-white"
             />
             <div>
-              <p className="text-md font-semibold truncate">Erlangga Siantar</p>
+              <p className="text-md font-semibold truncate">
+                {user?.nama_perusahaan}
+              </p>
               <p className="text-white font-semibold mt-1 bg-[#3B3F48] px-2 w-12 rounded-sm text-xs">
                 Seller
               </p>

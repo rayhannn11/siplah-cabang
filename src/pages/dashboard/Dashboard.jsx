@@ -328,7 +328,7 @@ const Dashboard = () => {
         {/* Table Top REkanan */}
         <div className="card bg-base-100 shadow-md">
           <div className="card-body">
-            <h2 className="card-title text-lg">Produk Populer</h2>
+            <h2 className="card-title text-lg">Rekanan Populer</h2>
             <div className="overflow-x-auto">
               <table className="table table-zebra w-full text-sm">
                 <thead>

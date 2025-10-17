@@ -17,7 +17,7 @@ const Orders = () => {
   const [status, setStatus] = useState("");
 
   const [productStatus, setProductStatus] = useState("");
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const debouncedSearch = useDebounce(search, 800);
 
   const [openDownloadModal, setOpenDownloadModal] = useState(false);

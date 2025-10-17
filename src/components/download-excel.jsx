@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { exportOrders, exportOrdersStatus } from "../api";
 import { useAuthStore } from "../stores";
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
+
 const DOWNLOAD_PREFIX = "https://api.siplah.dashboard.eurekagroup.id";
 
 export default function DownloadExcel({ open, onClose }) {
@@ -18,20 +22,10 @@ export default function DownloadExcel({ open, onClose }) {
   // Filter fields
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
 
-  // Set default startDate = 1 bulan lalu, endDate = hari ini
-  useEffect(() => {
-    const now = new Date();
-    const lastMonth = new Date();
-    lastMonth.setMonth(now.getMonth() - 1);
-
-    const formatDate = (d) => d.toISOString().slice(0, 10);
-    setStartDate(formatDate(lastMonth));
-    setEndDate(formatDate(now));
-  }, []);
-
+  const today = new Date();
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
   // Polling status export tiap 2 detik
   useEffect(() => {
     if (!jobId || step !== 2) return;
@@ -73,6 +67,17 @@ export default function DownloadExcel({ open, onClose }) {
 
     animationFrameRef.current = requestAnimationFrame(animate);
   };
+
+  // helper untuk tampilkan date dd/mm/yyyy
+  // const formatDateToDisplay = (isoDate) => {
+  //   const [year, month, day] = isoDate.split("-");
+  //   return `${day}/${month}/${year}`;
+  // };
+
+  // useEffect(() => {
+  //   console.log("Start Date:", formatDisplay(startDate));
+  //   console.log("End Date:", formatDisplay(endDate));
+  // }, [startDate, endDate]);
 
   const handleStartExport = async () => {
     try {
@@ -214,19 +219,26 @@ export default function DownloadExcel({ open, onClose }) {
                   <option value="21">Ditutup</option>
                 </select>
 
-                <div className="flex gap-2">
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="input input-bordered w-1/2"
-                  />
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="input input-bordered w-1/2"
-                  />
+                <div className="flex gap-10">
+                  <div className="flex flex-col">
+                    <label>Start Date</label>
+                    <DatePicker
+                      selected={startDate}
+                      onChange={(date) => setStartDate(date)}
+                      dateFormat="dd/MM/yyyy"
+                      className="input input-bordered w-full"
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label>End Date</label>
+                    <DatePicker
+                      selected={endDate}
+                      onChange={(date) => setEndDate(date)}
+                      dateFormat="dd/MM/yyyy"
+                      className="input input-bordered w-full"
+                    />
+                  </div>
                 </div>
               </div>
             )}

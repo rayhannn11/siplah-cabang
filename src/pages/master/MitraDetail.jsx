@@ -258,7 +258,7 @@ const MitraDetail = () => {
       <div className="bg-white rounded shadow border border-gray-200">
         <div className="flex items-center gap-2 px-4 py-2 bg-[#0A1F3C] rounded-t">
           <Info className="w-5 h-5 text-white" />
-          <span className="font-semibold text-white">Dokument</span>
+          <span className="font-semibold text-white">Dokumen</span>
         </div>
 
         <div className="grid sm:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -313,7 +313,7 @@ const MitraDetail = () => {
           </div>
 
           {/* True PPN */}
-          <div>
+          {/* <div>
             <div className="flex items-center gap-3 text-gray-700 font-semibold">
               <Percent className="w-5 h-5 text-[#0073B7]" />
               <span>True PPN</span>
@@ -321,7 +321,7 @@ const MitraDetail = () => {
             <p className="ml-8 text-gray-900 font-medium">
               {mall.business_settings.is_trueppn?.label || "-"}
             </p>
-          </div>
+          </div> */}
 
           {/* Vendor */}
           <div>
@@ -357,7 +357,7 @@ const MitraDetail = () => {
           </div>
 
           {/* Sandbox */}
-          <div>
+          {/* <div>
             <div className="flex items-center gap-3 text-gray-700 font-semibold">
               <FlaskConical className="w-5 h-5 text-[#0073B7]" />
               <span>Sandbox</span>
@@ -365,7 +365,7 @@ const MitraDetail = () => {
             <p className="ml-8 text-gray-900 font-medium">
               {mall.business_settings.sandbox?.label || "-"}
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
       {/* ====== STATUS REKANAN ====== */}

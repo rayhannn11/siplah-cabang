@@ -41,6 +41,7 @@ const Table = ({
   const [columnSizing, setColumnSizing] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
   const [filters, setFilters] = useState({});
+  const [localSearch, setLocalSearch] = useState("");
 
   // set initial data
   useEffect(() => {
@@ -186,6 +187,12 @@ const Table = ({
     const tableHead = [Object.keys(data[0] || {})];
     doc.autoTable({ head: tableHead, body: tableData, startY: 15 });
     doc.save(`${excel_name}.pdf`);
+  };
+
+  const handleSearchClick = () => {
+    if (tableConfig?.onSearchChange) {
+      tableConfig.onSearchChange(localSearch);
+    }
   };
 
   return (
@@ -334,15 +341,22 @@ const Table = ({
               );
             })}
           {columnConfig.showSearchInput && (
-            <div className="relative w-full md:w-64 items-center">
-              <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-500 z-40 mt-5" />
-              <input
-                type="text"
-                className="input input-sm w-full pl-10 pr-3 border rounded-md mt-5"
-                placeholder="Cari data..."
-                value={tableConfig.search}
-                onChange={(e) => tableConfig.onSearchChange(e.target.value)}
-              />
+            <div className="flex flex-col md:flex-row items-center gap-2 w-full md:w-72 mt-4 ml-10">
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  className="input input-sm w-full text-md pr-3 border rounded-md"
+                  placeholder="Cari data..."
+                  value={localSearch}
+                  onChange={(e) => setLocalSearch(e.target.value)}
+                />
+              </div>
+              <button
+                onClick={handleSearchClick}
+                className="btn btn-sm btn-primary whitespace-nowrap"
+              >
+                Cari
+              </button>
             </div>
           )}
         </div>

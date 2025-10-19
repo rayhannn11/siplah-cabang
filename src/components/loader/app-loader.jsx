@@ -31,7 +31,7 @@ export default function AppLoader() {
         </div>
       </div>
       <p className="z-50 mt-4 text-lg font-semibold text-gray-700 tracking-wide">
-        Loading <span className="text-primary">Raja Gudang</span>...
+        Loading <span className="text-primary">SIPLah Cabang</span>...
       </p>
     </div>
   );

@@ -6,14 +6,22 @@ export const fetchOrders = async ({
   search = "",
   status = "",
   mall_id = "",
+  startDate = "",
+  endDate = "",
+
   // vaStatus = "",
 }) => {
   const params = new URLSearchParams();
 
-  params.append("page", page);
-  params.append("limit", limit);
+  // params.append("page", page);
+  // params.append("limit", limit);
+
+  if (page) params.append("page", page);
+  if (limit) params.append("limit", limit);
   if (search) params.append("search", search);
   if (mall_id) params.append("mall_id", mall_id);
+  if (startDate) params.append("startDate", startDate);
+  if (endDate) params.append("endDate", endDate);
 
   // 🟢 Ubah format status
   if (status && Array.isArray(status) && status.length > 0) {
@@ -49,6 +57,8 @@ export const fetchOrdersUnconfirmed = async ({
   page = 1,
   limit = 10,
   search = "",
+  startDate = "",
+  endDate = "",
   // status = "",
   //   vaStatus = "",
 }) => {
@@ -57,6 +67,8 @@ export const fetchOrdersUnconfirmed = async ({
   params.append("page", page);
   params.append("limit", limit);
   if (search) params.append("search", search);
+  if (startDate) params.append("startDate", startDate);
+  if (endDate) params.append("endDate", endDate);
   // if (status) params.append("status", status);
   //   if (vaStatus) params.append("vaStatus", vaStatus);
 
@@ -98,6 +110,8 @@ export const fetchPayments = async ({
   search = "",
   status = "",
   vaStatus = "",
+  startDate = "",
+  endDate = "",
 }) => {
   const params = new URLSearchParams();
 
@@ -106,6 +120,8 @@ export const fetchPayments = async ({
   if (search) params.append("search", search);
   if (status) params.append("status", status);
   if (vaStatus) params.append("va_status", vaStatus);
+  if (startDate) params.append("startDate", startDate);
+  if (endDate) params.append("endDate", endDate);
 
   const res = await axios.get(`payments?${params.toString()}`);
   return res.data;

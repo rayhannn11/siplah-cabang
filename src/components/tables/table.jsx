@@ -15,6 +15,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Search,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
@@ -23,6 +25,9 @@ import "jspdf-autotable";
 import { isValid, parseISO, format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import Select from "react-select";
+
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const Table = ({
   dataSource,
@@ -42,6 +47,8 @@ const Table = ({
   const [globalFilter, setGlobalFilter] = useState("");
   const [filters, setFilters] = useState({});
   const [localSearch, setLocalSearch] = useState("");
+
+  const [isOpen, setIsOpen] = useState(false);
 
   // set initial data
   useEffect(() => {
@@ -233,9 +240,149 @@ const Table = ({
         ))}
       </div>
 
-      {/* 2️⃣ Filters Section */}
+      {/* fillter */}
+      {filterConfig?.isFilter && (
+        <div className="space-y-4">
+          {/* === Button Toggle === */}
+          <button
+            onClick={() => setIsOpen((prev) => !prev)}
+            className="cursor-pointer flex items-center justify-between w-full sm:w-auto gap-2 px-4 py-2 text-sm sm:text-[15px] font-medium text-white bg-[#153a6d] hover:bg-[#0f2b52] rounded-lg shadow-md transition-all duration-200 focus:ring-2 focus:ring-[#153a6d]/40"
+          >
+            <span>Filters</span>
+            {isOpen ? (
+              <ChevronUp className="w-5 h-5" />
+            ) : (
+              <ChevronDown className="w-5 h-5" />
+            )}
+          </button>
+
+          {/* === Filter Block === */}
+          <div
+            className={`transition-all duration-500 ease-in-out overflow-hidden ${
+              isOpen ? "max-h-[1000px] opacity-100 mt-3" : "max-h-0 opacity-0"
+            }`}
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5  rounded-xl  ">
+              {filterConfig?.filters?.items?.map((f, idx) => {
+                const options =
+                  f.options?.map((opt) => ({
+                    value: opt.value ?? opt.id ?? opt,
+                    label: opt.label ?? opt.name ?? String(opt),
+                  })) || [];
+
+                const normalizedValue = Array.isArray(f.value)
+                  ? f.value
+                  : f.value
+                  ? [f.value]
+                  : [];
+
+                const selectedOptions = options.filter((opt) =>
+                  normalizedValue
+                    .map((v) => String(v))
+                    .includes(String(opt.value))
+                );
+
+                const isMulti = f.isMulti ?? false;
+                const isSearchable = f.isSearchable ?? false;
+
+                return (
+                  <div
+                    key={idx}
+                    className="flex flex-col gap-1.5 w-full   rounded-md px-2.5 py-1.5   hover:shadow-md transition-all duration-200"
+                  >
+                    <span className="text-[12.5px] font-medium text-gray-700 truncate">
+                      {f.label}
+                    </span>
+
+                    {f.type === "date" ? (
+                      <DatePicker
+                        selected={f.value ? parseISO(f.value) : null}
+                        onChange={(date) => {
+                          if (!date) {
+                            f.onChange("");
+                            return;
+                          }
+                          const backendValue = format(date, "yyyy-MM-dd");
+                          f.onChange(backendValue);
+                        }}
+                        dateFormat="dd/MM/yyyy"
+                        placeholderText="dd/mm/yyyy"
+                        className="w-full outline-1 border border-gray-300 rounded-md px-2 py-1.5 text-[13px] focus:outline-none focus:ring-1 focus:ring-[#153a6d] focus:border-[#153a6d] bg-white"
+                      />
+                    ) : (
+                      <Select
+                        classNamePrefix="custom-select"
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
+                        options={options}
+                        value={selectedOptions}
+                        onChange={(selected) => {
+                          const values = Array.isArray(selected)
+                            ? selected.map((s) => s.value)
+                            : selected
+                            ? [selected.value]
+                            : [];
+                          f.onChange?.(values);
+                        }}
+                        placeholder="Pilih..."
+                        isSearchable={isSearchable}
+                        isMulti={isMulti}
+                        className="text-[13px] cursor-pointer outline-1"
+                        styles={{
+                          control: (base, state) => ({
+                            ...base,
+                            backgroundColor: "white",
+                            borderColor: state.isFocused
+                              ? "#153a6d"
+                              : "#CBD5E1",
+                            boxShadow: "none",
+                            minHeight: "32px",
+                            "&:hover": { borderColor: "#153a6d" },
+                          }),
+                          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                          menu: (base) => ({
+                            ...base,
+                            backgroundColor: "white",
+                          }),
+                          menuList: (base) => ({
+                            ...base,
+                            backgroundColor: "white",
+                            color: "#1E293B",
+                          }),
+                          option: (base, state) => ({
+                            ...base,
+                            backgroundColor: state.isFocused
+                              ? "#E2E8F0"
+                              : "white",
+                            color: "#1E293B",
+                            cursor: "pointer",
+                          }),
+                          singleValue: (base) => ({
+                            ...base,
+                            color: "#1E293B",
+                          }),
+                          multiValueLabel: (base) => ({
+                            ...base,
+                            color: "#153a6d",
+                          }),
+                          placeholder: (base) => ({
+                            ...base,
+                            color: "#64748B",
+                          }),
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2️⃣ Sorting & Search Section */}
       <div
-        className={`flex flex-col md:flex-row md:items-center ${
+        className={`flex flex-col md:flex-row md:items-center my-4  ${
           filterConfig?.isFilter ? "md:justify-between" : "md:justify-between"
         } gap-4`}
       >
@@ -261,9 +408,9 @@ const Table = ({
           <span className="text-sm">entries</span>
         </div>
 
-        {/* filter + search */}
+        {/*  search */}
         <div className="flex items-center gap-2 w-full md:w-auto justify-between">
-          {filterConfig?.isFilter &&
+          {/* {filterConfig?.isFilter &&
             filterConfig?.filters?.items?.map((f, idx) => {
               const options =
                 f.options?.map((opt) => ({
@@ -342,7 +489,8 @@ const Table = ({
                   />
                 </div>
               );
-            })}
+            })} */}
+
           {columnConfig.showSearchInput && (
             <div className="flex flex-col md:flex-row items-center gap-2 w-full md:w-72 mt-4 ml-10">
               <div className="relative w-full">
@@ -646,7 +794,9 @@ const Table = ({
             <button
               className="cursor-pointer px-3 py-1 border border-gray-400 bg-white text-black rounded text-sm hover:bg-[#337AB7] hover:text-white disabled:opacity-50"
               onClick={() =>
-                tableConfig?.onPageChange(pagination.currentPage - 1)
+                tableConfig?.onPageChange(
+                  tableConfig?.pagination.currentPage - 1
+                )
               }
               disabled={tableConfig?.pagination.currentPage === 1}
             >
@@ -694,7 +844,9 @@ const Table = ({
             <button
               className="cursor-pointer px-3 py-1 border border-gray-400 bg-white text-black rounded text-sm hover:bg-[#337AB7] hover:text-white disabled:opacity-50"
               onClick={() =>
-                tableConfig?.onPageChange(pagination.currentPage + 1)
+                tableConfig?.onPageChange(
+                  tableConfig?.pagination.currentPage + 1
+                )
               }
               disabled={
                 tableConfig?.pagination.currentPage ===

@@ -29,6 +29,7 @@ import {
 } from "@tanstack/react-table";
 import useFetch from "../../hooks/useFetch";
 import { fetchOrdersStats, fetchPaymentsSummary } from "../../api";
+import TableSkeleton from "../../components/loader/table-skeleton";
 
 ChartJS.register(
   CategoryScale,
@@ -58,8 +59,6 @@ const Dashboard = () => {
   } = useFetch(["paymentsSummary"], fetchPaymentsSummary, {
     refetchOnWindowFocus: false,
   });
-
-  console.log(dataPaymentsStats?.data);
 
   // 🔹 Gunakan useMemo agar tidak trigger re-render berulang
   const stats = useMemo(() => {
@@ -99,22 +98,10 @@ const Dashboard = () => {
         icon: XCircle,
       },
       {
-        label: "Total Pesanan",
+        label: "Total Transaksi",
         value: dataOrdersStats.data.total_orders || 0,
         color: "bg-green-600",
         icon: BarChart3,
-      },
-      {
-        label: "Total Nilai Pesanan",
-        value: dataOrdersStats.data.total_amount_formatted || "Rp0",
-        color: "bg-amber-600",
-        icon: Package,
-      },
-      {
-        label: "Total Cabang",
-        value: dataOrdersStats.data.malls_count || 0,
-        color: "bg-violet-600",
-        icon: Building2,
       },
     ];
   }, [dataOrdersStats]);
@@ -123,8 +110,6 @@ const Dashboard = () => {
     () => dataOrdersStats?.data?.top_malls || [],
     [dataOrdersStats?.data?.top_malls]
   );
-
-  console.log(malls, "malls");
 
   // === Definisi Kolom ===
   const columnHelper = createColumnHelper();
@@ -157,6 +142,14 @@ const Dashboard = () => {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  if (initialLoadingPaymentsSummary || initialLoadingStats) {
+    return (
+      <div className="p-10">
+        <TableSkeleton rows={6} />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -205,6 +198,16 @@ const Dashboard = () => {
             </div>
           </div>
         ))}
+        {/* {initialLoadingStats && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="card shadow-md bg-gray-200 dark:bg-gray-700 animate-pulse min-w-[100px] rounded-lg"
+              ></div>
+            ))}
+          </div>
+        )} */}
       </div>
 
       {/* Chart + Table */}

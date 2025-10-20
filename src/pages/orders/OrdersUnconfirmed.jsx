@@ -6,24 +6,39 @@ import TableSkeleton from "../../components/loader/table-skeleton";
 import ErrorFetch from "../../components/error-fetch";
 import { fetchOrdersUnconfirmed } from "../../api";
 import { formatNumberToRupiah } from "../../utils";
+import { format } from "date-fns";
 
 const OrdersUnconfirmed = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState(""); // state filter Status
+  const [status, setStatus] = useState("");
+
+  const today = format(new Date(), "yyyy-MM-dd");
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
 
   const debouncedSearch = useDebounce(search, 800);
 
   // Fetch API
   const { data, initialLoading, refetching, error } = useFetch(
-    ["ordersUnconfirmed", page, limit, debouncedSearch, status],
+    [
+      "ordersUnconfirmed",
+      page,
+      limit,
+      debouncedSearch,
+      status,
+      startDate,
+      endDate,
+    ],
     () =>
       fetchOrdersUnconfirmed({
         page,
         limit,
         search: debouncedSearch,
         status, // kirim filter status
+        startDate,
+        endDate,
       }),
     { keepPreviousData: true }
   );
@@ -140,6 +155,37 @@ const OrdersUnconfirmed = () => {
           onPageChange: setPage,
           pagination,
           loading: refetching,
+          redirectField: "po_id",
+
+          // 👇 callback ketika diklik
+          onRowRedirect: (row) => {
+            window.location.href = `/orders/detail/${row.order_id}`;
+          },
+        }}
+        filterConfig={{
+          isFilter: !!data?.data?.filters,
+          filters: {
+            items: [
+              {
+                label: "Tanggal Mulai",
+                type: "date",
+                value: startDate,
+                onChange: (val) => {
+                  setStartDate(val);
+                  setPage(1);
+                },
+              },
+              {
+                label: "Tanggal Selesai",
+                type: "date",
+                value: endDate,
+                onChange: (val) => {
+                  setEndDate(val);
+                  setPage(1);
+                },
+              },
+            ],
+          },
         }}
         // filterConfig={{
         //   isFilter: !!data?.data?.filters,

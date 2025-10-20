@@ -15,6 +15,7 @@ import TableSkeleton from "../../components/loader/table-skeleton";
 import ErrorFetch from "../../components/error-fetch";
 import { fetchPayments, fetchPaymentsSummary } from "../../api";
 import { formatNumberToRupiah } from "../../utils";
+import { format } from "date-fns";
 
 const Payments = () => {
   const [page, setPage] = useState(1);
@@ -22,13 +23,25 @@ const Payments = () => {
   const [search, setSearch] = useState("");
   const [collapsed, setCollapsed] = useState(true);
 
+  const today = format(new Date(), "yyyy-MM-dd");
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
+
   const [vaStatus, setVaStatus] = useState("");
 
   const debouncedSearch = useDebounce(search, 800);
 
   const { data, initialLoading, refetching, error } = useFetch(
-    ["payments", page, limit, debouncedSearch, vaStatus],
-    () => fetchPayments({ page, limit, search: debouncedSearch, vaStatus }),
+    ["payments", page, limit, debouncedSearch, vaStatus, startDate, endDate],
+    () =>
+      fetchPayments({
+        page,
+        limit,
+        search: debouncedSearch,
+        vaStatus,
+        startDate,
+        endDate,
+      }),
     { keepPreviousData: true }
   );
 
@@ -257,6 +270,24 @@ const Payments = () => {
           isFilter: !!data?.data?.filters,
           filters: {
             items: [
+              {
+                label: "Tanggal Mulai",
+                type: "date",
+                value: startDate,
+                onChange: (val) => {
+                  setStartDate(val);
+                  setPage(1);
+                },
+              },
+              {
+                label: "Tanggal Selesai",
+                type: "date",
+                value: endDate,
+                onChange: (val) => {
+                  setEndDate(val);
+                  setPage(1);
+                },
+              },
               {
                 label: "Status Diteruskan",
                 options: data?.data?.filters?.va_status || [],

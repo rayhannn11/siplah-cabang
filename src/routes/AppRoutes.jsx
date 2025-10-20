@@ -37,6 +37,30 @@ export default function AppRoutes() {
     }
   }, [location.pathname, navigate]);
 
+  useEffect(() => {
+    const stored = localStorage.getItem("tourSeen");
+
+    if (stored) {
+      const { seen, timestamp } = JSON.parse(stored);
+      const now = Date.now();
+      const twentyFourHours = 24 * 60 * 60 * 1000; // 24 jam dalam milidetik
+
+      // kalau sudah lebih dari 24 jam, reset lagi ke false
+      if (now - timestamp > twentyFourHours) {
+        localStorage.setItem(
+          "tourSeen",
+          JSON.stringify({ seen: false, timestamp: now })
+        );
+      }
+    } else {
+      // belum pernah diset
+      localStorage.setItem(
+        "tourSeen",
+        JSON.stringify({ seen: false, timestamp: Date.now() })
+      );
+    }
+  }, []);
+
   return (
     <Suspense fallback={<AppLoader />}>
       <Routes>

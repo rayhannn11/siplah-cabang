@@ -9,12 +9,17 @@ import { ChevronDown, ChevronUp, FileDown, Info } from "lucide-react";
 import { formatNumberToRupiah } from "../../utils";
 import { useLocation } from "react-router-dom";
 import DownloadExcel from "../../components/download-excel";
+import { format } from "date-fns";
 
 const Orders = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
+
+  const today = format(new Date(), "yyyy-MM-dd");
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
 
   const [productStatus, setProductStatus] = useState("");
   const [collapsed, setCollapsed] = useState(true);
@@ -31,7 +36,17 @@ const Orders = () => {
 
   // Fetch orders
   const { data, initialLoading, refetching, error } = useFetch(
-    ["orders", page, limit, debouncedSearch, status, productStatus, rekanan],
+    [
+      "orders",
+      page,
+      limit,
+      debouncedSearch,
+      status,
+      productStatus,
+      rekanan,
+      startDate,
+      endDate,
+    ],
     () =>
       fetchOrders({
         page,
@@ -40,6 +55,8 @@ const Orders = () => {
         status,
         product_status: productStatus,
         mall_id: rekanan,
+        startDate,
+        endDate,
       }),
     { keepPreviousData: true }
   );
@@ -298,6 +315,24 @@ const Orders = () => {
           isFilter: !!data?.data?.filters,
           filters: {
             items: [
+              {
+                label: "Tanggal Mulai",
+                type: "date",
+                value: startDate,
+                onChange: (val) => {
+                  setStartDate(val);
+                  setPage(1);
+                },
+              },
+              {
+                label: "Tanggal Selesai",
+                type: "date",
+                value: endDate,
+                onChange: (val) => {
+                  setEndDate(val);
+                  setPage(1);
+                },
+              },
               {
                 label: "Daftar Rekanan",
                 options: dataOrdersRekanan?.data || [],

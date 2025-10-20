@@ -28,7 +28,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     }).then((result) => {
       if (result.isConfirmed) {
         // tetap pakai fungsi logout dari store
-        localStorage.setItem("tourSeen", "false");
+        // localStorage.setItem("tourSeen", "false");
         logout();
       }
     });

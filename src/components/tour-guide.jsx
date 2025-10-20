@@ -29,17 +29,25 @@ const steps = [
 ];
 
 export default function TourGuide() {
+  const EXPIRY_HOURS = 24;
+
   const [currentStep, setCurrentStep] = useState(0);
   const [seen, setSeen] = useState(false);
   const tooltipRef = useRef(null);
 
   useEffect(() => {
-    const hasSeen = localStorage.getItem("tourSeen") === "true";
+    const tourData = JSON.parse(localStorage.getItem("tourSeen") || "{}");
+    const hasSeen = tourData?.seen || false;
+    // const hasSeen = localStorage.getItem("tourSeen") === "true";
     setSeen(hasSeen);
   }, []);
 
   const handleSkip = () => {
-    localStorage.setItem("tourSeen", "true");
+    const data = {
+      seen: true,
+      timestamp: Date.now(), // waktu disimpan
+    };
+    localStorage.setItem("tourSeen", JSON.stringify(data));
     setSeen(true);
   };
 
@@ -47,7 +55,11 @@ export default function TourGuide() {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      localStorage.setItem("tourSeen", "true");
+      const data = {
+        seen: true,
+        timestamp: Date.now(),
+      };
+      localStorage.setItem("tourSeen", JSON.stringify(data));
       setSeen(true);
     }
   };

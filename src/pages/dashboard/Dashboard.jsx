@@ -119,46 +119,12 @@ const Dashboard = () => {
     ];
   }, [dataOrdersStats]);
 
-  // memoized chart data & options (important for react-chartjs-2)
-  const chartData = useMemo(
-    () => ({
-      labels: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "Mei",
-        "Jun",
-        "Jul",
-        "Agt",
-        "Sep",
-        "Okt",
-        "Nov",
-        "Des",
-      ],
-      datasets: [
-        {
-          label: "Grafik Perkembangan Perolehan",
-          data: [0, 0, 0, 0, 1000000, 15000000, 0, 0, 0, 0, 0, 0],
-          backgroundColor: "#F39C19",
-          borderRadius: 6,
-        },
-      ],
-    }),
-    []
+  const malls = useMemo(
+    () => dataOrdersStats?.data?.top_malls || [],
+    [dataOrdersStats?.data?.top_malls]
   );
 
-  const chartOptions = useMemo(
-    () => ({
-      responsive: true,
-      plugins: {
-        legend: { position: "top" },
-      },
-    }),
-    []
-  );
-
-  const malls = dataOrdersStats?.data?.top_malls || [];
+  console.log(malls, "malls");
 
   // === Definisi Kolom ===
   const columnHelper = createColumnHelper();
@@ -245,7 +211,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Table lainnya */}
         <div className="card bg-base-100 shadow-md">
-          <div className="card-body">
+          <div className="card-body dark:bg-white">
             <h2 className="card-title text-lg mb-3">Statistik Pembayaran</h2>
 
             {/* === RINGKASAN TOTAL === */}
@@ -268,22 +234,30 @@ const Dashboard = () => {
             {/* === BY ORDER STATUS === */}
             <h3 className="text-md font-semibold mb-2">Per Status Pesanan</h3>
             <div className="overflow-x-auto mb-6">
-              <table className="table table-zebra w-full text-sm">
+              <table className="table  w-full text-sm ">
                 <thead>
                   <tr>
-                    <th className="w-1/3">Status</th>
-                    <th className="text-center">Jumlah Order</th>
-                    <th className="text-right">Total Nilai</th>
+                    <th className="w-1/3 dark:text-[#161515]">Status</th>
+                    <th className="text-center dark:text-[#161515]">
+                      Jumlah Order
+                    </th>
+                    <th className="text-right dark:text-[#161515]">
+                      Total Nilai
+                    </th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="dark:bg-white">
                   {Object.values(
                     dataPaymentsStats?.data?.by_order_status || {}
                   ).map((item) => (
                     <tr key={item.status_id}>
-                      <td className="font-medium">{item.status_name}</td>
-                      <td className="text-center">{item.order_count}</td>
-                      <td className="text-right">
+                      <td className="font-medium dark:text-[#161515]">
+                        {item.status_name}
+                      </td>
+                      <td className="text-center dark:text-[#161515]">
+                        {item.order_count}
+                      </td>
+                      <td className="text-right dark:text-[#161515]">
                         {item.total_amount_formatted}
                       </td>
                     </tr>
@@ -297,12 +271,16 @@ const Dashboard = () => {
               Per Status Virtual Account
             </h3>
             <div className="overflow-x-auto">
-              <table className="table table-zebra w-full text-sm">
+              <table className="table  w-full text-sm">
                 <thead>
                   <tr>
-                    <th className="w-1/3">Status VA</th>
-                    <th className="text-center">Jumlah Order</th>
-                    <th className="text-right">Total Nilai</th>
+                    <th className="w-1/3 dark:text-[#161515]">Status VA</th>
+                    <th className="text-center dark:text-[#161515]">
+                      Jumlah Order
+                    </th>
+                    <th className="text-right dark:text-[#161515]">
+                      Total Nilai
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -326,14 +304,16 @@ const Dashboard = () => {
         </div>
 
         {/* Table Top REkanan */}
-        <div className="card bg-base-100 shadow-md">
+        <div className="card bg-base-100 shadow-md dark:bg-white dark:text-black">
           <div className="card-body">
-            <h2 className="card-title text-lg">Rekanan Populer</h2>
+            <h2 className="card-title text-lg dark:text-black">
+              Rekanan Populer
+            </h2>
             <div className="overflow-x-auto">
-              <table className="table table-zebra w-full text-sm">
+              <table className="table  w-full text-sm dark:text-black">
                 <thead>
                   {table.getHeaderGroups().map((headerGroup) => (
-                    <tr key={headerGroup.id}>
+                    <tr key={headerGroup.id} className="dark:text-black">
                       {headerGroup.headers.map((header) => (
                         <th key={header.id}>
                           {flexRender(
@@ -347,7 +327,7 @@ const Dashboard = () => {
                 </thead>
                 <tbody>
                   {table.getRowModel().rows.map((row) => (
-                    <tr key={row.id}>
+                    <tr key={row.id} className="dark:text-black">
                       {row.getVisibleCells().map((cell) => (
                         <td key={cell.id}>
                           {flexRender(

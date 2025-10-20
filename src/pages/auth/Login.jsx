@@ -127,7 +127,7 @@ const Login = () => {
           {/* Header */}
           <div className="text-center mb-6">
             <h2 className="text-3xl font-bold text-primary">SIPLah</h2>
-            <p className="text-xl font-semibold">
+            <p className="text-xl font-semibold dark:text-black">
               (Sistem Informasi Pengadaan Sekolah)
             </p>
           </div>

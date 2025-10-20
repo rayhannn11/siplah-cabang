@@ -20,7 +20,7 @@ export function AuthLayout() {
   }, [isMobile, isDesktop]);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col h-screen bg-gray-50 ">
       {/* Tour trigger */}
       <TourGuide />
       {/* Topbar hanya tampil di mobile */}

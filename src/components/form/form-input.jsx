@@ -55,7 +55,7 @@ export default function FormInput({
           disabled={disabled}
           required={required}
           className={clsx(
-            "input input-bordered text-base w-full",
+            "input input-bordered text-base w-full dark:bg-white dark:outline-1  dark:text-black dark:placeholder:text-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500 focus:ring-0 focus:outline-offset-0",
             Icon && "pl-10", // kasih padding kalau ada icon
             error && "input-error"
           )}

@@ -243,7 +243,10 @@ const Table = ({
         <div className="flex items-center gap-2">
           <span className="text-sm">Show</span>
           <select
-            className="select select-sm select-bordered"
+            className="select select-sm select-bordered w-auto
+             dark:bg-white dark:text-black dark:border-gray-300
+             focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500
+             focus:ring-0 focus:outline-offset-0"
             value={tableConfig?.pagination?.pageSize || 10}
             onChange={(e) =>
               tableConfig?.onPageSizeChange?.(Number(e.target.value))
@@ -345,7 +348,7 @@ const Table = ({
               <div className="relative w-full">
                 <input
                   type="text"
-                  className="input input-sm w-full text-md pr-3 border rounded-md"
+                  className="input input-sm w-full text-md pr-3 border rounded-md dark:bg-white dark:bg-white dark:outline-1  dark:text-black dark:placeholder:text-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500 focus:ring-0 focus:outline-offset-0"
                   placeholder="Cari data..."
                   value={localSearch}
                   onChange={(e) => setLocalSearch(e.target.value)}

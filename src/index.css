@@ -2,6 +2,16 @@
 @plugin "daisyui";
 @custom-variant dark (&:where(.dark, .dark *));
 
+@layer base {
+  @media (prefers-color-scheme: dark) {
+    html {
+      color-scheme: light !important; /* paksa mode terang */
+      background-color: #fff !important;
+      color: #000 !important;
+    }
+  }
+}
+
 .custom-select__menu,
 .custom-select__option,
 .custom-select__single-value,

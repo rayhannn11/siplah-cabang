@@ -31,7 +31,7 @@ export default function FormSelect({
   return (
     <div className={clsx("form-control", className)}>
       {label && (
-        <label htmlFor={name} className="label mb-1 dark:text-white">
+        <label htmlFor={name} className="label mb-1 ">
           <span className="label-text text-base font-medium">{label}</span>
         </label>
       )}

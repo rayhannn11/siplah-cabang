@@ -1,19 +1,19 @@
 import {
-  LayoutDashboard,
-  ShoppingCart,
-  FileText,
-  Wallet,
-  Circle,
-  Users,
-  ChartNoAxesCombined,
-  User,
-  LogOut,
-  BadgeAlert,
-  Building2,
-  History,
-  ShieldAlert,
-  Package2,
-  FileWarning,
+    LayoutDashboard,
+    ShoppingCart,
+    FileText,
+    Wallet,
+    Circle,
+    Users,
+    ChartNoAxesCombined,
+    User,
+    LogOut,
+    BadgeAlert,
+    Building2,
+    History,
+    ShieldAlert,
+    Package2,
+    FileWarning,
 } from "lucide-react";
 
 // export const adminNavigation = [
@@ -152,77 +152,89 @@ import {
 // ];
 
 export const adminNavigation = [
-  {
-    section: "",
-    items: [
-      {
-        name: "Dashboard",
-        href: "/dashboard",
-        icon: LayoutDashboard,
-        tourId: "menu-dashboard", // ✅ tambahin ini
-      },
-    ],
-  },
-  {
-    section: "ORDER",
-    items: [
-      {
-        name: "Semua Pesanan",
-        href: "/orders",
-        icon: Package2,
-        tourId: "menu-orders", // ✅
-      },
-      {
-        name: "Pesanan Belum Konfirmasi",
-        href: "/orders/unconfirmed",
-        icon: FileWarning,
-        tourId: "menu-unconfirmed", // ✅
-      },
-    ],
-  },
-  {
-    section: "FINANCE",
-    items: [
-      {
-        name: "Pembayaran",
-        href: "/payments/all",
-        icon: Wallet,
-        tourId: "menu-finance", // ✅
-      },
-    ],
-  },
-  {
-    section: "MASTER",
-    items: [
-      {
-        name: "Rekanan Aktif",
-        href: "/rekanan",
-        icon: Users,
-        tourId: "menu-rekanan-active", // ✅
-      },
-      {
-        name: "Rekanan Nonaktif",
-        href: "/rekanan/nonaktif",
-        icon: ShieldAlert,
-        tourId: "menu-rekanan-inactive", // ✅
-      },
-      {
-        name: "Rekanan History",
-        href: "/rekanan/history",
-        icon: History,
-        tourId: "menu-rekanan-history", // ✅
-      },
-    ],
-  },
-  {
-    section: "LAIN-LAIN",
-    items: [
-      {
-        name: "Profil",
-        href: "/profile",
-        icon: User,
-        tourId: "menu-profile", // ✅
-      },
-    ],
-  },
+    {
+        section: "",
+        items: [
+            {
+                name: "Dashboard",
+                href: "/dashboard",
+                icon: LayoutDashboard,
+                tourId: "menu-dashboard", // ✅ tambahin ini
+            },
+        ],
+    },
+    {
+        section: "ORDER",
+        items: [
+            {
+                name: "Semua Pesanan",
+                href: "/orders",
+                icon: Package2,
+                tourId: "menu-orders", // ✅
+            },
+            {
+                name: "Pesanan Belum Konfirmasi",
+                href: "/orders/unconfirmed",
+                icon: FileWarning,
+                tourId: "menu-unconfirmed", // ✅
+            },
+        ],
+    },
+    {
+        section: "FINANCE",
+        items: [
+            {
+                name: "Pembayaran",
+                href: "/payments/all",
+                icon: Wallet,
+                tourId: "menu-finance", // ✅
+            },
+        ],
+    },
+    {
+        section: "MASTER",
+        items: [
+            {
+                name: "Rekanan Aktif",
+                href: "/rekanan",
+                icon: Users,
+                tourId: "menu-rekanan-active", // ✅
+            },
+            {
+                name: "Rekanan Nonaktif",
+                href: "/rekanan/nonaktif",
+                icon: ShieldAlert,
+                tourId: "menu-rekanan-inactive", // ✅
+            },
+            {
+                name: "Rekanan History",
+                href: "/rekanan/history",
+                icon: History,
+                tourId: "menu-rekanan-history", // ✅
+            },
+        ],
+    },
+    {
+        section: "LAPORAN",
+        items: [
+            {
+                name: "Tagihan Eureka",
+                href: "/report/payment-eureka",
+                icon: FileText,
+                tourId: "menu-tagihan-eureka",
+                visibleFor: [49], // Only visible for cabang_id 49
+            },
+        ],
+    },
+    {
+        section: "LAIN-LAIN",
+        items: [
+            {
+                name: "Profil",
+                href: "/profile",
+                icon: User,
+                tourId: "menu-profile", // ✅
+            },
+        ],
+    },
 ];

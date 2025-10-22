@@ -61,19 +61,17 @@ const Payments = () => {
 
     // Label kolom tabel sesuai respon API
     const labelMapping = {
-        no: "No.",
-        order_id: "Order ID",
-        invoice_no: "No. Invoice",
-        payment_va: "VA",
+        no: "No",
+        invoice_no: "ID invoice",
+        pemesan: "Pemesan",
         sekolah: "Sekolah",
-        customer_name: "Pelanggan",
-        toko: "Toko",
-        cabang: "Cabang",
-        total: "Total",
-        tgl_bayar: "Tanggal Bayar",
+        penyedia: "Penyedia",
+        total_tagihan: "Total Tagihan",
+        total_transfer: "Total Transfer",
+        tgl_bayar: "Tgl Bayar",
+        tgl_tf: "Tgl TF",
         status: "Status",
-        va_status: "Status VA",
-        actions: "Opsi",
+        actions: "Action",
     };
 
     // Style untuk status
@@ -84,17 +82,8 @@ const Payments = () => {
                 variant: "status",
                 base: "px-2 py-1 rounded-full text-xs font-semibold text-nowrap",
                 classes: {
-                    Dibayar: "bg-green-100 text-green-800",
+                    "Telah Dilengkapi": "bg-green-100 text-green-800",
                     default: "bg-gray-100 text-gray-600",
-                },
-            },
-            va_status: {
-                wrapper: "span",
-                variant: "va_status",
-                base: "px-2 py-1 rounded-full text-xs font-semibold text-nowrap",
-                classes: {
-                    close: "bg-blue-100 text-blue-800",
-                    open: "bg-yellow-100 text-yellow-800",
                 },
             },
             actions: {
@@ -110,17 +99,15 @@ const Payments = () => {
 
         return data.data.data.map((item) => ({
             no: item.no,
-            order_id: item.order_id,
             invoice_no: item.invoice_no,
-            payment_va: item.payment_va,
-            sekolah: item.sekolah,
-            customer_name: item.customer_name,
-            toko: item.toko,
-            cabang: item.cabang,
-            total: formatNumberToRupiah(item.total),
-            tgl_bayar: item.tgl_bayar,
-            status: item.status_name,
-            va_status: item.va_status_raw,
+            pemesan: `${item.cfname} ${item.clname}`.trim(),
+            sekolah: item.shipping_company,
+            penyedia: item.toko,
+            total_tagihan: item.total_tagihan_formatted || "Rp0",
+            total_transfer: item.total_pembayaran_formatted || "Rp0",
+            tgl_bayar: item.tgl_pembayaran,
+            tgl_tf: item.tgl_transfer || "-",
+            status: item.singkat,
         }));
     }, [data]);
 
@@ -167,10 +154,7 @@ const Payments = () => {
     return (
         <div className="p-4 mb-10">
             <h1 className="text-3xl font-semibold mb-6">Daftar Pembayaran</h1>
-
-            {/* 🔹 Payment Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-white rounded-xl shadow-md mb-6">
-                {/* Total Pembayaran */}
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-white rounded-xl shadow-md mb-6">
                 <div className="card bg-[#1E3A8A] text-white shadow-md hover:shadow-lg transition transform hover:-translate-y-1 rounded-xl">
                     <div className="card-body">
                         <h2 className="card-title text-md font-semibold opacity-90">
@@ -182,7 +166,6 @@ const Payments = () => {
                     </div>
                 </div>
 
-                {/* 30 Hari Terakhir */}
                 <div className="card bg-[#0F766E] text-white shadow-md hover:shadow-lg transition transform hover:-translate-y-1 rounded-xl">
                     <div className="card-body">
                         <h2 className="card-title text-md font-semibold opacity-90">
@@ -195,7 +178,6 @@ const Payments = () => {
                     </div>
                 </div>
 
-                {/* Dibayar */}
                 <div className="card bg-[#047857] text-white shadow-md hover:shadow-lg transition transform hover:-translate-y-1 rounded-xl">
                     <div className="card-body">
                         <h2 className="card-title text-md font-semibold opacity-90">
@@ -213,7 +195,6 @@ const Payments = () => {
                     </div>
                 </div>
 
-                {/* Selesai */}
                 <div className="card bg-[#334155] text-white shadow-md hover:shadow-lg transition transform hover:-translate-y-1 rounded-xl">
                     <div className="card-body">
                         <h2 className="card-title text-md font-semibold opacity-90">
@@ -230,8 +211,7 @@ const Payments = () => {
                         </p>
                     </div>
                 </div>
-            </div>
-
+            </div> */}
             <Table
                 dataSource={dataSource}
                 labelMapping={labelMapping}

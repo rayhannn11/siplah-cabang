@@ -99,13 +99,24 @@ const OrdersReport = () => {
 
   const handleExport = async () => {
     try {
+      // Tampilkan swal loader
+      Swal.fire({
+        title: "Sedang mengekspor data...",
+        text: "Mohon tunggu sebentar",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
       setExporting(true);
 
+      // Panggil API export
       const blob = await exportOrdersReport({
         ...filters,
       });
 
-      // Create download link
+      // Buat link download blob
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -115,6 +126,7 @@ const OrdersReport = () => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
+      // Tutup loader dan tampilkan sukses
       Swal.fire({
         icon: "success",
         title: "Export Berhasil",

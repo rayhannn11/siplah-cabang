@@ -482,14 +482,19 @@ const Table = ({
               <div className="relative w-full">
                 <input
                   type="text"
-                  className="input input-sm w-full text-md pr-3 border rounded-md dark:bg-white dark:bg-white dark:outline-1  dark:text-black dark:placeholder:text-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500 focus:ring-0 focus:outline-offset-0"
+                  className="input input-sm w-full text-md pr-3 border rounded-md dark:bg-white dark:text-black dark:placeholder:text-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500 focus:ring-0 focus:outline-offset-0"
                   placeholder="Cari data..."
-                  value={localSearch}
-                  onChange={(e) => setLocalSearch(e.target.value)}
+                  value={tableConfig.localSearch || ""}
+                  onChange={(e) =>
+                    tableConfig.onLocalSearchChange?.(e.target.value)
+                  }
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && tableConfig.onSearchSubmit?.()
+                  }
                 />
               </div>
               <button
-                onClick={handleSearchClick}
+                onClick={tableConfig.onSearchSubmit}
                 className="btn btn-sm btn-primary whitespace-nowrap"
               >
                 Cari

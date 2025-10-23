@@ -9,6 +9,8 @@ import { fetchPartnersInactive } from "../../api";
 const MitraNonAktive = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [localSearch, setLocalSearch] = useState("");
+
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 800);
 
@@ -83,6 +85,12 @@ const MitraNonAktive = () => {
       }
     : null;
 
+  const handleSearchClick = () => {
+    // baru ubah state pencarian utama
+    setSearch(localSearch);
+    setPage(1);
+  };
+
   // Loading & Error
   if (initialLoading) {
     return (
@@ -151,6 +159,9 @@ const MitraNonAktive = () => {
           page,
           limit,
           search,
+          localSearch,
+          onLocalSearchChange: setLocalSearch,
+          onSearchSubmit: handleSearchClick,
           onSearchChange: (val) => {
             setSearch(val);
             setPage(1);

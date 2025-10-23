@@ -10,6 +10,8 @@ import { formatNumberToRupiah } from "../../utils";
 const Mitra = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+
+  const [localSearch, setLocalSearch] = useState("");
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 800);
 
@@ -102,6 +104,12 @@ const Mitra = () => {
       }
     : null;
 
+  const handleSearchClick = () => {
+    // baru ubah state pencarian utama
+    setSearch(localSearch);
+    setPage(1);
+  };
+
   // Loading & Error State
   if (initialLoading) {
     return (
@@ -138,6 +146,9 @@ const Mitra = () => {
           page,
           limit,
           search,
+          localSearch,
+          onLocalSearchChange: setLocalSearch,
+          onSearchSubmit: handleSearchClick,
           onSearchChange: (val) => {
             setSearch(val);
             setPage(1);

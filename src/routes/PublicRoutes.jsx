@@ -6,7 +6,7 @@ export default function PublicRoutes() {
   // const token = "sss"; // simulasi: belum login
 
   if (token) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/cabang/dashboard" replace />;
   }
 
   return (

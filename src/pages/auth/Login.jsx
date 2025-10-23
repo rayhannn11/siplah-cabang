@@ -67,7 +67,7 @@ const Login = () => {
             // });
 
             // 3. Redirect
-            navigate("/dashboard");
+            navigate("/cabang/dashboard");
           } else {
             Swal.fire({
               icon: "error",
@@ -116,7 +116,7 @@ const Login = () => {
         {/* Left Image (60%) */}
         <div className="hidden md:flex w-[55%] bg-[#0a1f3c] items-center justify-center">
           <img
-            src="/images/login3.jpg"
+            src={`${import.meta.env.BASE_URL}/images/login3.jpg`}
             alt="Login Illustration"
             className="w-full h-full object-cover"
           />

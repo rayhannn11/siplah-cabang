@@ -33,7 +33,7 @@ export default function AppRoutes() {
   useEffect(() => {
     // Kalau path saat ini adalah '/' maka redirect ke '/login'
     if (location.pathname === "/") {
-      navigate("/login", { replace: true });
+      navigate("/cabang/login", { replace: true });
     }
   }, [location.pathname, navigate]);
 
@@ -65,8 +65,10 @@ export default function AppRoutes() {
     <Suspense fallback={<AppLoader />}>
       <Routes>
         {/* === PUBLIC === */}
-        <Route path="/" element={<PublicRoutes />}>
-          <Route path="login" element={<Login />} />
+        <Route path="/cabang" element={<PublicRoutes />}>
+          <Route index element={<Navigate to="/cabang/login" replace />} />
+
+          <Route path="/cabang/login" element={<Login />} />
           {/* <Route path="login-callback" element={<LoginCallback />} /> */}
         </Route>
 

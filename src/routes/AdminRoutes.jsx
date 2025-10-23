@@ -19,7 +19,9 @@ const PaymentsReport = lazy(() => import("../pages/master/PaymentsReport"));
 
 // Orders
 const Orders = lazy(() => import("../pages/orders/Orders"));
-const OrdersUnconfirmed = lazy(() => import("../pages/orders/OrdersUnconfirmed"));
+const OrdersUnconfirmed = lazy(() =>
+  import("../pages/orders/OrdersUnconfirmed")
+);
 
 const DetailOrder = lazy(() => import("../pages/orders/DetailOrder"));
 
@@ -30,62 +32,77 @@ const PaymentEureka = lazy(() => import("../pages/report/PaymentEureka"));
 const OrdersReport = lazy(() => import("../pages/report/OrdersReport"));
 
 const AdminRoutes = () => {
-    const fullRoutes = [
-        // Dashboard
-        { path: "/dashboard", element: <Dashboard /> },
+  const fullRoutes = [
+    // Dashboard
+    { path: "/cabang/dashboard", element: <Dashboard /> },
 
-        // Dari CV
-        { path: "/orders", element: <Orders mode="dariEureka" /> },
-        {
-            path: "/orders/unconfirmed",
-            element: <OrdersUnconfirmed mode="dariEureka" />,
-        },
+    // Dari CV
+    { path: "/cabang/orders", element: <Orders mode="dariEureka" /> },
+    {
+      path: "/cabang/orders/unconfirmed",
+      element: <OrdersUnconfirmed mode="dariEureka" />,
+    },
 
-        { path: "/orders/all", element: <Orders mode="all" /> },
-        { path: "/orders/new", element: <Orders mode="new" /> },
-        { path: "/orders/processing", element: <Orders mode="processing" /> },
-        { path: "/orders/shipped", element: <Orders mode="shipped" /> },
-        { path: "/orders/expired", element: <Orders mode="expired" /> },
-        { path: "/orders/cancelled", element: <Orders mode="cancelled" /> },
-        { path: "/orders/detail/:id", element: <DetailOrder /> },
+    { path: "/cabang/orders/all", element: <Orders mode="all" /> },
+    { path: "/cabang/orders/new", element: <Orders mode="new" /> },
+    {
+      path: "/cabang/orders/processing",
+      element: <Orders mode="processing" />,
+    },
+    { path: "/cabang/orders/shipped", element: <Orders mode="shipped" /> },
+    { path: "/cabang/orders/expired", element: <Orders mode="expired" /> },
+    {
+      path: "/cabang/orders/cancelled",
+      element: <Orders mode="cancelled" />,
+    },
+    { path: "/cabang/orders/detail/:id", element: <DetailOrder /> },
 
-        // Pembayaran
-        { path: "/payments/all", element: <Payments mode="all" /> },
-        { path: "/payments/incomplete", element: <Payments mode="incomplete" /> },
-        {
-            path: "/payments/verification",
-            element: <Payments mode="verification" />,
-        },
+    // Pembayaran
+    { path: "/cabang/payments/all", element: <Payments mode="all" /> },
+    {
+      path: "/cabang/payments/incomplete",
+      element: <Payments mode="incomplete" />,
+    },
+    {
+      path: "/cabang/payments/verification",
+      element: <Payments mode="verification" />,
+    },
 
-        { path: "/payments/unconfirmed", element: <Payments mode="unconfirmed" /> },
-        { path: "/payments/:id", element: <DetailPayment /> },
+    {
+      path: "/cabang/payments/unconfirmed",
+      element: <Payments mode="unconfirmed" />,
+    },
+    { path: "/cabang/payments/:id", element: <DetailPayment /> },
 
-        // Master
-        { path: "/rekanan", element: <Mitra /> },
-        { path: "/rekanan/orders/:id", element: <Orders mode="mitraOrders" /> },
-        {
-            path: "/rekanan/order/:id",
-            element: <DetailOrder mode="mitraDetailOrder" />,
-        },
-        {
-            path: "/rekanan/detail/:id",
-            element: <MitraDetail />,
-        },
-        { path: "/rekanan/history", element: <MitraHistory /> },
-        { path: "/rekanan/nonaktif", element: <MitraNonAktif /> },
-        { path: "/rekanan/payments-report", element: <PaymentsReport /> },
+    // Master
+    { path: "/cabang/rekanan", element: <Mitra /> },
+    {
+      path: "/cabang/rekanan/orders/:id",
+      element: <Orders mode="mitraOrders" />,
+    },
+    {
+      path: "/cabang/rekanan/order/:id",
+      element: <DetailOrder mode="mitraDetailOrder" />,
+    },
+    {
+      path: "/cabang/rekanan/detail/:id",
+      element: <MitraDetail />,
+    },
+    { path: "/cabang/rekanan/history", element: <MitraHistory /> },
+    { path: "/cabang/rekanan/nonaktif", element: <MitraNonAktif /> },
+    { path: "/cabang/rekanan/payments-report", element: <PaymentsReport /> },
 
-        // Laporan Payment
-        { path: "/report/payment-satdik", element: <PaymentSatdik /> },
-        { path: "/report/payment-cv", element: <PaymentSchool /> },
-        { path: "/report/payment-eureka", element: <PaymentEureka /> },
-        { path: "/report/orders-report", element: <OrdersReport /> },
+    // Laporan Payment
+    { path: "/cabang/report/payment-satdik", element: <PaymentSatdik /> },
+    { path: "/cabang/report/payment-cv", element: <PaymentSchool /> },
+    { path: "/cabang/report/payment-eureka", element: <PaymentEureka /> },
+    { path: "/cabang/report/orders-report", element: <OrdersReport /> },
 
-        // Lain-lain
-        { path: "/profile", element: <Profile /> },
-    ];
+    // Lain-lain
+    { path: "/cabang/profile", element: <Profile /> },
+  ];
 
-    return fullRoutes;
+  return fullRoutes;
 };
 
 export default AdminRoutes;

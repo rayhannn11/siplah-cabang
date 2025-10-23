@@ -221,3 +221,55 @@ export const fetchEurekaPaymentReport = async ({
     const res = await axios.get(`/payments/report-eureka?${params.toString()}`);
     return res.data;
 };
+
+export const fetchOrdersReport = async ({
+    page = 1,
+    limit = 25,
+    year = "",
+    startDate = "",
+    endDate = "",
+    order_status_id = "",
+    search = "",
+    sortBy = "date_added",
+    sortOrder = "DESC",
+}) => {
+    const params = new URLSearchParams();
+
+    if (page) params.append("page", page);
+    if (limit) params.append("limit", limit);
+    if (year) params.append("year", year);
+    if (startDate) params.append("startDate", startDate);
+    if (endDate) params.append("endDate", endDate);
+    if (order_status_id) params.append("order_status_id", order_status_id);
+    if (search) params.append("search", search);
+    if (sortBy) params.append("sortBy", sortBy);
+    if (sortOrder) params.append("sortOrder", sortOrder);
+
+    const res = await axios.get(`/payments/orders-report?${params.toString()}`);
+    return res.data;
+};
+
+export const exportOrdersReport = async ({
+    year = "",
+    startDate = "",
+    endDate = "",
+    order_status_id = "",
+    search = "",
+    sortBy = "date_added",
+    sortOrder = "DESC",
+}) => {
+    const params = new URLSearchParams();
+
+    if (year) params.append("year", year);
+    if (startDate) params.append("startDate", startDate);
+    if (endDate) params.append("endDate", endDate);
+    if (order_status_id) params.append("order_status_id", order_status_id);
+    if (search) params.append("search", search);
+    if (sortBy) params.append("sortBy", sortBy);
+    if (sortOrder) params.append("sortOrder", sortOrder);
+
+    const res = await axios.get(`/payments/orders-report/export?${params.toString()}`, {
+        responseType: "blob",
+    });
+    return res.data;
+};

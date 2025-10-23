@@ -27,6 +27,7 @@ const DetailOrder = lazy(() => import("../pages/orders/DetailOrder"));
 const PaymentSatdik = lazy(() => import("../pages/report/PaymentSatdik"));
 const PaymentSchool = lazy(() => import("../pages/report/PaymentSchool"));
 const PaymentEureka = lazy(() => import("../pages/report/PaymentEureka"));
+const OrdersReport = lazy(() => import("../pages/report/OrdersReport"));
 
 const AdminRoutes = () => {
     const fullRoutes = [
@@ -78,6 +79,7 @@ const AdminRoutes = () => {
         { path: "/report/payment-satdik", element: <PaymentSatdik /> },
         { path: "/report/payment-cv", element: <PaymentSchool /> },
         { path: "/report/payment-eureka", element: <PaymentEureka /> },
+        { path: "/report/orders-report", element: <OrdersReport /> },
 
         // Lain-lain
         { path: "/profile", element: <Profile /> },

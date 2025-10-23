@@ -224,6 +224,12 @@ export const adminNavigation = [
                 tourId: "menu-tagihan-eureka",
                 visibleFor: [49], // Only visible for cabang_id 49
             },
+            {
+                name: "Tagihan Cabang",
+                href: "/report/orders-report",
+                icon: ChartNoAxesCombined,
+                tourId: "menu-tagihan-cabang",
+            },
         ],
     },
     {

@@ -156,14 +156,21 @@ export default function DownloadExcel({ open, onClose }) {
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Download Recap Excel</h2>
-          {step === 1 && ( // sembunyikan icon X ketika step 2
+          {/* {step === 1 && (
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-gray-800 cursor-pointer"
             >
               ✕
             </button>
-          )}
+          )} */}
+
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-800 cursor-pointer"
+          >
+            ✕
+          </button>
         </div>
 
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}

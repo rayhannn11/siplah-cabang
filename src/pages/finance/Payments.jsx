@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Copy, CreditCard, Eye, Trash } from "lucide-react";
+import { Copy, CreditCard, Eye, FileDown, Trash } from "lucide-react";
 import Swal from "sweetalert2";
 import Table from "../../components/tables/table";
 import useFetch from "../../hooks/useFetch";
@@ -9,6 +9,7 @@ import ErrorFetch from "../../components/error-fetch";
 import { fetchPayments, fetchPaymentsSummary } from "../../api";
 import { formatNumberToRupiah } from "../../utils";
 import { format } from "date-fns";
+import DownloadExcel from "../../components/download-excel";
 
 const Payments = () => {
   const [page, setPage] = useState(1);
@@ -22,11 +23,23 @@ const Payments = () => {
   const [endDate, setEndDate] = useState(today);
 
   const [vaStatus, setVaStatus] = useState("");
+  const [isForwarded, setIsForwarded] = useState("");
+
+  const [openDownloadModal, setOpenDownloadModal] = useState(false);
 
   const debouncedSearch = useDebounce(search, 800);
 
   const { data, initialLoading, refetching, error } = useFetch(
-    ["payments", page, limit, debouncedSearch, vaStatus, startDate, endDate],
+    [
+      "payments",
+      page,
+      limit,
+      debouncedSearch,
+      vaStatus,
+      startDate,
+      endDate,
+      isForwarded,
+    ],
     () =>
       fetchPayments({
         page,
@@ -35,6 +48,7 @@ const Payments = () => {
         vaStatus,
         startDate,
         endDate,
+        isForwarded,
       }),
     { keepPreviousData: true }
   );
@@ -73,6 +87,7 @@ const Payments = () => {
     invoice_no: "ID invoice",
     pemesan: "Pemesan",
     sekolah: "Sekolah",
+
     penyedia: "Penyedia",
     total_tagihan: "Total Tagihan",
     total_transfer: "Total Transfer",
@@ -110,6 +125,7 @@ const Payments = () => {
       invoice_no: item.invoice_no,
       pemesan: `${item.cfname} ${item.clname}`.trim(),
       sekolah: item.shipping_company,
+      kecamatan: item.shipping_kecamatan,
       penyedia: item.toko,
       total_tagihan: item.total_tagihan_formatted || "Rp0",
       total_transfer: item.total_pembayaran_formatted || "Rp0",
@@ -145,7 +161,7 @@ const Payments = () => {
     );
 
   const widgets = {
-    widgetClass: "flex justify-start gap-3 mb-4",
+    widgetClass: "flex justify-between gap-3 mb-4",
     widgetsContent: [
       {
         type: "button",
@@ -155,6 +171,18 @@ const Payments = () => {
             onClick: clearFilters,
             classes:
               "cursor-pointer flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-all text-sm font-medium",
+          },
+        ],
+      },
+      {
+        type: "button",
+        buttons: [
+          {
+            text: "Download Recap Pembayaran",
+            icon: FileDown,
+            onClick: () => setOpenDownloadModal(true),
+            classes:
+              "cursor-pointer flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all text-sm font-medium",
           },
         ],
       },
@@ -277,6 +305,22 @@ const Payments = () => {
                   setPage(1);
                 },
               },
+              {
+                label: "Status Diteruskan",
+                type: "select",
+                options: [
+                  { label: "Semua", value: "" },
+                  { label: "Diteruskan", value: "true" },
+                  { label: "Belum Diteruskan", value: "false" },
+                ],
+                value: isForwarded,
+                onChange: (val) => {
+                  // val dikirim dalam bentuk array karena Table pakai isMulti default
+                  const selectedValue = Array.isArray(val) ? val[0] ?? "" : val;
+                  setIsForwarded(selectedValue);
+                  setPage(1);
+                },
+              },
               // {
               //     label: "Status Diteruskan",
               //     options: data?.data?.filters?.va_status || [],
@@ -291,6 +335,16 @@ const Payments = () => {
         }}
         widgets={widgets}
       />
+
+      {openDownloadModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50 ">
+          <DownloadExcel
+            open={openDownloadModal}
+            onClose={() => setOpenDownloadModal(false)}
+            type="payments"
+          />
+        </div>
+      )}
     </div>
   );
 };

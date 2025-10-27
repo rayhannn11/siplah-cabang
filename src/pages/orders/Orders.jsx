@@ -379,6 +379,7 @@ const Orders = () => {
           <DownloadExcel
             open={openDownloadModal}
             onClose={() => setOpenDownloadModal(false)}
+            type="orders"
           />
         </div>
       )}

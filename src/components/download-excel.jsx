@@ -1,5 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { exportOrders, exportOrdersStatus } from "../api";
+import {
+  exportOrders,
+  exportOrdersStatus,
+  exportPaymentsReport,
+  exportPaymentStatus,
+} from "../api";
 import { useAuthStore } from "../stores";
 
 import DatePicker from "react-datepicker";
@@ -8,8 +13,13 @@ import { format } from "date-fns";
 
 const DOWNLOAD_PREFIX = "https://api.siplah.dashboard.eurekagroup.id";
 
-export default function DownloadExcel({ open, onClose }) {
+export default function DownloadExcel({ type = "orders", open, onClose }) {
   const { token } = useAuthStore();
+  const exportFn = type === "payments" ? exportPaymentsReport : exportOrders;
+
+  const checkStatusFn =
+    type === "payments" ? exportPaymentStatus : exportOrdersStatus;
+
   const [step, setStep] = useState(1);
   const [filterOption, setFilterOption] = useState("all");
   const [jobId, setJobId] = useState(null);
@@ -32,7 +42,7 @@ export default function DownloadExcel({ open, onClose }) {
 
     const interval = setInterval(async () => {
       try {
-        const res = await exportOrdersStatus(jobId);
+        const res = await checkStatusFn(jobId);
         if (res?.data) {
           setStatusData(res);
           animateProgress(res.data.progress || 0);
@@ -91,7 +101,7 @@ export default function DownloadExcel({ open, onClose }) {
             }
           : {};
 
-      const res = await exportOrders(payload);
+      const res = await exportFn(payload);
       if (res?.data?.jobId) {
         setJobId(res.data.jobId);
         setStep(2);
@@ -155,7 +165,10 @@ export default function DownloadExcel({ open, onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Download Recap Excel</h2>
+          <h2 className="text-lg font-semibold">
+            Download Recap Excel{" "}
+            {type === "payments" ? "Pembayaran" : "Pesanan"}
+          </h2>
           {/* {step === 1 && (
             <button
               onClick={onClose}

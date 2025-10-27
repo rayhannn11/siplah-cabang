@@ -67,6 +67,7 @@ const MitraNonAktive = () => {
       jenis_usaha: item.jenis_usaha,
       nama_pic: item.nama_pic,
       kota: item.kota,
+      kecamatan: item.kecamatan,
       approve: item.approve,
       last_transaction: item.last_transaction,
       inactive_duration: item.inactive_duration,

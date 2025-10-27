@@ -77,6 +77,7 @@ const Mitra = () => {
       no_rekening: item.no_rekening,
       nama_pic: item.nama_pic,
       kota: item.kota,
+      kecamatan: item.kecamatan,
       approve: item.approve,
       actions: (
         <button

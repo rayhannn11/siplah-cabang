@@ -229,6 +229,7 @@ export const adminNavigation = [
         href: "/cabang/report/orders-report",
         icon: ChartNoAxesCombined,
         tourId: "menu-tagihan-cabang",
+        visibleFor: [49],
       },
     ],
   },

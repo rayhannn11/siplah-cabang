@@ -157,7 +157,7 @@ export const adminNavigation = [
     items: [
       {
         name: "Dashboard",
-        href: "/cabang/dashboard",
+        href: "/internal/mitraku/dashboard",
         icon: LayoutDashboard,
         tourId: "menu-dashboard", // ✅ tambahin ini
       },
@@ -168,13 +168,13 @@ export const adminNavigation = [
     items: [
       {
         name: "Semua Pesanan",
-        href: "/cabang/orders",
+        href: "/internal/mitraku/orders",
         icon: Package2,
         tourId: "menu-orders", // ✅
       },
       {
         name: "Pesanan Belum Konfirmasi",
-        href: "/cabang/orders/unconfirmed",
+        href: "/internal/mitraku/orders/unconfirmed",
         icon: FileWarning,
         tourId: "menu-unconfirmed", // ✅
       },
@@ -185,7 +185,7 @@ export const adminNavigation = [
     items: [
       {
         name: "Pembayaran",
-        href: "/cabang/payments/all",
+        href: "/internal/mitraku/payments/all",
         icon: Wallet,
         tourId: "menu-finance", // ✅
       },
@@ -196,19 +196,19 @@ export const adminNavigation = [
     items: [
       {
         name: "Rekanan Aktif",
-        href: "/cabang/rekanan",
+        href: "/internal/mitraku/rekanan",
         icon: Users,
         tourId: "menu-rekanan-active", // ✅
       },
       {
         name: "Rekanan Nonaktif",
-        href: "/cabang/rekanan/nonaktif",
+        href: "/internal/mitraku/rekanan/nonaktif",
         icon: ShieldAlert,
         tourId: "menu-rekanan-inactive", // ✅
       },
       {
         name: "Rekanan History",
-        href: "/cabang/rekanan/history",
+        href: "/internal/mitraku/rekanan/history",
         icon: History,
         tourId: "menu-rekanan-history", // ✅
       },
@@ -219,14 +219,14 @@ export const adminNavigation = [
     items: [
       {
         name: "Tagihan Eureka",
-        href: "/cabang/report/payment-eureka",
+        href: "/internal/mitraku/report/payment-eureka",
         icon: FileText,
         tourId: "menu-tagihan-eureka",
         visibleFor: [49], // Only visible for cabang_id 49
       },
       {
         name: "Tagihan Cabang",
-        href: "/cabang/report/orders-report",
+        href: "/internal/mitraku/report/orders-report",
         icon: ChartNoAxesCombined,
         tourId: "menu-tagihan-cabang",
         visibleFor: [49],
@@ -238,7 +238,7 @@ export const adminNavigation = [
     items: [
       {
         name: "Profil",
-        href: "/cabang/profile",
+        href: "/internal/mitraku/profile",
         icon: User,
         tourId: "menu-profile", // ✅
       },

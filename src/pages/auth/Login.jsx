@@ -67,7 +67,7 @@ const Login = () => {
             // });
 
             // 3. Redirect
-            navigate("/cabang/dashboard");
+            navigate("/internal/mitraku/dashboard");
           } else {
             Swal.fire({
               icon: "error",

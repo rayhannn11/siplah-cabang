@@ -94,9 +94,9 @@ const DetailOrder = ({ data }) => {
               <table className="w-full text-sm">
                 <thead>
                   <tr>
-                    <th className="px-2 py-1">Tgl History</th>
-                    <th className="px-2 py-1">Status</th>
-                    <th className="px-2 py-1">Memo</th>
+                    <th className="px-2 py-1 dark:text-black">Tgl History</th>
+                    <th className="px-2 py-1 dark:text-black">Status</th>
+                    <th className="px-2 py-1 dark:text-black">Memo</th>
                   </tr>
                 </thead>
                 <tbody className="text-center">
@@ -283,7 +283,7 @@ const DetailOrder = ({ data }) => {
           </div>
           <div className="w-full overflow-x-auto mt-6 px-4">
             <table className="w-full min-w-max text-sm mb-4 border border-gray-300">
-              <thead>
+              <thead className="dark:text-black">
                 <tr className="bg-gray-200 text-left">
                   {[
                     "No",
@@ -309,7 +309,7 @@ const DetailOrder = ({ data }) => {
                 </tr>
               </thead>
 
-              <tbody className="text-center border border-gray-300">
+              <tbody className="text-center border border-gray-300 dark:text-black">
                 {data.sectionProductInformation.items.map((item, idx) => (
                   <tr key={idx} className="hover:bg-gray-50">
                     {/* No */}
@@ -386,7 +386,7 @@ const DetailOrder = ({ data }) => {
               ([label, value], idx) => (
                 <div
                   key={idx}
-                  className={`flex justify-between mb-2 mt-4 ${
+                  className={`flex justify-between mb-2 dark:text-black mt-4 ${
                     label.includes("Total") || label.includes("Grand")
                       ? "font-bold"
                       : ""

@@ -39,7 +39,9 @@ export default function FormInput({
     <div className={clsx("form-control mb-0", className)}>
       {label && (
         <label htmlFor={name} className="label mb-1 ">
-          <span className="label-text text-base font-medium">{label}</span>
+          <span className="label-text text-base font-medium dark:text-black">
+            {label}
+          </span>
         </label>
       )}
 
@@ -55,7 +57,7 @@ export default function FormInput({
           disabled={disabled}
           required={required}
           className={clsx(
-            "input input-bordered text-base w-full dark:bg-white dark:outline-1  dark:text-black dark:placeholder:text-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500 focus:ring-0 focus:outline-offset-0",
+            "input input-bordered text-base w-full dark:bg-white dark:text-black dark:outline-gray-300 dark:outline-1  focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500 focus:ring-0 focus:outline-offset-0",
             Icon && "pl-10", // kasih padding kalau ada icon
             error && "input-error"
           )}

@@ -32,7 +32,9 @@ export default function FormSelect({
     <div className={clsx("form-control", className)}>
       {label && (
         <label htmlFor={name} className="label mb-1 ">
-          <span className="label-text text-base font-medium">{label}</span>
+          <span className="label-text text-base font-medium dark:text-black">
+            {label}
+          </span>
         </label>
       )}
 
@@ -41,7 +43,7 @@ export default function FormSelect({
         disabled={disabled}
         required={required}
         className={clsx(
-          "select select-bordered text-base w-full",
+          "select select-bordered text-base w-full text-black dark:!text-black dark:[color-scheme:light]",
           error && "select-error"
         )}
         {...register(name, {

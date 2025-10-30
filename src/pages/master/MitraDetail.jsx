@@ -435,7 +435,7 @@ const MitraDetail = () => {
           </span>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 p-6 text-base leading-relaxed">
+        <div className="dark:text-black grid md:grid-cols-2 gap-6 p-6 text-base leading-relaxed">
           <div className="flex items-start gap-2">
             <Globe2 className="w-6 h-6 text-blue-600 mt-1" />
             <p>

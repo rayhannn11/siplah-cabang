@@ -2,7 +2,6 @@
 import { FormProvider } from "react-hook-form";
 
 export default function BaseForm({ children, methods, onSubmit, transparant }) {
-  // dark:border-slate-700  dark:bg-[#1D293D]
   return (
     <FormProvider {...methods}>
       <form

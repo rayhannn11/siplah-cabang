@@ -66,9 +66,11 @@ export function AuthLayout() {
 
             <footer className="flex flex-col md:flex-row justify-center items-center gap-2 bg-[#ECF0F5] py-6 text-sm md:text-base shadow-md">
               <p className="text-center md:text-left">
-                <span className="font-bold">Copyright © 2019 - 2025</span>{" "}
-                <span className="font-bold text-blue-600">SIPLah</span>. All
-                rights reserved.
+                <span className="font-bold dark:text-black">
+                  Copyright © 2019 - 2025
+                </span>{" "}
+                <span className="font-bold text-blue-600">SIPLah</span>.{" "}
+                <span className="dark:text-black"> All rights reserved.</span>
               </p>
             </footer>
           </main>

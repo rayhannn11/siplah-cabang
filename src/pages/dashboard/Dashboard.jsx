@@ -291,11 +291,13 @@ const Dashboard = () => {
                     dataPaymentsStats?.data?.by_va_status || {}
                   ).map((item) => (
                     <tr key={item.va_status}>
-                      <td className="font-medium capitalize">
+                      <td className="font-medium capitalize dark:!text-black">
                         {item.va_status}
                       </td>
-                      <td className="text-center">{item.order_count}</td>
-                      <td className="text-right">
+                      <td className="text-center  dark:!text-black ">
+                        {item.order_count}
+                      </td>
+                      <td className="text-right dark:!text-black">
                         {item.total_amount_formatted}
                       </td>
                     </tr>

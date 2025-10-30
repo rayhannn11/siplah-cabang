@@ -293,7 +293,7 @@ const Table = ({
                       showYearDropdown
                       dropdownMode="select"
                       className="w-full outline-1 border border-gray-300 rounded-md px-2 py-1.5 text-[13px]
-             focus:outline-none focus:ring-1 focus:ring-[#153a6d] focus:border-[#153a6d] bg-white"
+             focus:outline-none focus:ring-1 focus:ring-[#153a6d] focus:border-[#153a6d] bg-white text-black dark:!text-black dark:[color-scheme:light]"
                     />
                   ) : (
                     <Select
@@ -313,7 +313,7 @@ const Table = ({
                       placeholder="Pilih..."
                       isSearchable={isSearchable}
                       isMulti={isMulti}
-                      className="text-[13px] cursor-pointer outline-1"
+                      className="text-[13px] cursor-pointer outline-1 text-black dark:!text-black dark:[color-scheme:light]"
                       styles={{
                         control: (base, state) => ({
                           ...base,
@@ -374,7 +374,7 @@ const Table = ({
       >
         {/* show entries */}
         <div className="flex items-center gap-2">
-          <span className="text-sm">Show</span>
+          <span className="text-sm dark:text-black">Show</span>
           <select
             className="select select-sm select-bordered w-auto
              dark:bg-white dark:text-black dark:border-gray-300
@@ -391,7 +391,7 @@ const Table = ({
               </option>
             ))}
           </select>
-          <span className="text-sm">entries</span>
+          <span className="text-sm dark:text-black">entries</span>
         </div>
 
         {/*  search */}
@@ -482,7 +482,7 @@ const Table = ({
               <div className="relative w-full">
                 <input
                   type="text"
-                  className="input input-sm w-full text-md pr-3 border rounded-md dark:bg-white dark:text-black dark:placeholder:text-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500 focus:ring-0 focus:outline-offset-0"
+                  className="input input-sm w-full text-md pr-3 border rounded-md dark:bg-white dark:text-black dark:outline-1 dark:placeholder:text-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500 focus:ring-0 focus:outline-offset-0"
                   placeholder="Cari data..."
                   value={tableConfig.localSearch || ""}
                   onChange={(e) =>
@@ -574,7 +574,7 @@ const Table = ({
             ))}
           </thead>
 
-          <tbody>
+          <tbody className="!text-black">
             {tableConfig?.loading ? (
               <tr className="min-h-[120px]">
                 <td
@@ -622,7 +622,7 @@ const Table = ({
                         return (
                           <td
                             key={cell.id}
-                            className={`border-t border-b border-[#DEE2E6] px-3 py-2 text-center ${tdClass}`}
+                            className={`border-t border-b border-[#DEE2E6] px-3 py-2 text-center ${tdClass} text-black`}
                             onClick={(e) => e.stopPropagation()} // prevent row click
                           >
                             <div className="flex justify-center gap-2">

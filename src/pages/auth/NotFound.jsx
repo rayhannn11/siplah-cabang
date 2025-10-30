@@ -12,7 +12,10 @@ export default function NotFound() {
         <p className="mb-6 text-sm text-slate-600 ">
           Maaf, halaman yang kamu cari tidak tersedia atau telah dipindahkan.
         </p>
-        <Link to="/cabang/login" className="btn btn-sm btn-primary normal-case">
+        <Link
+          to="/internal/mitraku/login"
+          className="btn btn-sm btn-primary normal-case"
+        >
           Kembali ke halaman Login
         </Link>
       </div>

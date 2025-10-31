@@ -127,8 +127,11 @@ const Payments = () => {
       sekolah: item.shipping_company,
       kecamatan: item.shipping_kecamatan,
       penyedia: item.toko,
-      total_tagihan: item.total_tagihan_formatted || "Rp0",
-      total_transfer: item.total_pembayaran_formatted || "Rp0",
+      pph: formatNumberToRupiah(item.pph) || "Rp0",
+      ppn: formatNumberToRupiah(item.ppn) || "Rp0",
+      total_tagihan: formatNumberToRupiah(item.total_tagihan) || "Rp0",
+
+      total_transfer: formatNumberToRupiah(item.total_pembayaran) || "Rp0",
       tgl_bayar: item.tgl_pembayaran,
       tgl_tf: item.tgl_transfer || "-",
       status: item.singkat,

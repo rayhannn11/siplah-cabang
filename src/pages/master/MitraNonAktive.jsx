@@ -113,7 +113,7 @@ const MitraNonAktive = () => {
 
   return (
     <div className="p-4 mb-10">
-      <h1 className="text-3xl font-semibold mb-6">
+      <h1 className="text-3xl font-semibold mb-6 dark:text-black">
         Daftar Rekanan Tidak Aktif
       </h1>
 

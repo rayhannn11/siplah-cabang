@@ -266,6 +266,7 @@ export const exportPaymentsReport = async ({
   startDate = "",
   endDate = "",
   order_status_id = "",
+  is_forwarded = "", // ✅ tambahan
   search = "",
 }) => {
   const params = new URLSearchParams();
@@ -275,6 +276,7 @@ export const exportPaymentsReport = async ({
   if (startDate) params.append("startDate", startDate);
   if (endDate) params.append("endDate", endDate);
   if (order_status_id) params.append("order_status_id", order_status_id);
+  if (is_forwarded) params.append("is_forwarded", is_forwarded);
   if (search) params.append("search", search);
 
   const res = await axios.post(

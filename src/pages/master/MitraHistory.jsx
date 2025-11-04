@@ -148,7 +148,9 @@ const MitraHistory = () => {
 
   return (
     <div className="p-4 mb-10">
-      <h1 className="text-3xl font-semibold mb-6">Daftar Riwayat Rekanan</h1>
+      <h1 className="text-3xl font-semibold mb-6 dark:text-black">
+        Daftar Riwayat Rekanan
+      </h1>
 
       <Table
         dataSource={dataSource}

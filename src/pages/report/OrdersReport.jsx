@@ -178,7 +178,9 @@ const OrdersReport = () => {
   if (error) {
     return (
       <div className="p-4 mb-10">
-        <h1 className="text-3xl font-semibold mb-6">Tagihan Cabang</h1>
+        <h1 className="text-3xl font-semibold mb-6 dark:text-black">
+          Tagihan Cabang
+        </h1>
         <ErrorFetch message={error} onRetry={fetchData} />
       </div>
     );
@@ -188,7 +190,9 @@ const OrdersReport = () => {
     <div className="p-4 mb-10">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <h1 className="text-3xl font-semibold">Tagihan Cabang</h1>
+        <h1 className="text-3xl font-semibold dark:text-black">
+          Tagihan Cabang
+        </h1>
         <div className="flex gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -233,7 +237,7 @@ const OrdersReport = () => {
 
       {/* Filter Section */}
       {showFilters && (
-        <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+        <div className="bg-white p-4 rounded-lg shadow-md mb-6 dark:text-black">
           <h3 className="text-lg font-semibold mb-4">Filters</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Year Filter */}
@@ -337,7 +341,7 @@ const OrdersReport = () => {
 
       {/* Data Table */}
       {!loading && data && (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden dark:text-black">
           {data?.data && data.data.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">

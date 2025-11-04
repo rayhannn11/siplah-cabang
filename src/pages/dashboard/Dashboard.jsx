@@ -154,7 +154,7 @@ const Dashboard = () => {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-4 dark:text-black">Dashboard</h1>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">

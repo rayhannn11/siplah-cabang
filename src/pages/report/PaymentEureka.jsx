@@ -90,7 +90,9 @@ const PaymentEureka = () => {
   if (error) {
     return (
       <div className="p-4 mb-10">
-        <h1 className="text-3xl font-semibold mb-6">Tagihan Eureka</h1>
+        <h1 className="text-3xl font-semibold mb-6 dark:text-black">
+          Tagihan Eureka
+        </h1>
         <ErrorFetch message={error} onRetry={fetchData} />
       </div>
     );
@@ -100,7 +102,9 @@ const PaymentEureka = () => {
     <div className="p-4 mb-10">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-semibold">Tagihan Eureka</h1>
+        <h1 className="text-3xl font-semibold dark:text-black">
+          Tagihan Eureka
+        </h1>
         <button
           onClick={() => setShowFilters(!showFilters)}
           className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
@@ -112,7 +116,7 @@ const PaymentEureka = () => {
 
       {/* Filter Section */}
       {showFilters && (
-        <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+        <div className="bg-white p-4 rounded-lg shadow-md mb-6 dark:text-black">
           <h3 className="text-lg font-semibold mb-4">Filters</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Month Filter */}
@@ -293,7 +297,7 @@ const PaymentEureka = () => {
 
       {/* Data Table */}
       {!loading && (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden dark:text-black">
           {data?.data && data.data.length > 0 ? (
             <div className="overflow-x-auto">
               {data.data.map((cabang) => (

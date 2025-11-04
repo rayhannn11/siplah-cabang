@@ -9,9 +9,22 @@ import { useAuthStore } from "../stores";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Select from "react-select";
+
 import { format } from "date-fns";
 
 const DOWNLOAD_PREFIX = "https://api.siplah.dashboard.eurekagroup.id";
+
+const statusOptions = [
+  { value: "0", label: "Pesanan Baru" },
+  { value: "2", label: "Diproses" },
+  { value: "3", label: "Dikirim" },
+  { value: "17", label: "Diterima" },
+  { value: "18", label: "Dibayar" },
+  { value: "20", label: "Selesai" },
+  { value: "7", label: "Dibatalkan" },
+  { value: "21", label: "Ditutup" },
+];
 
 export default function DownloadExcel({ type = "orders", open, onClose }) {
   const { token } = useAuthStore();
@@ -32,6 +45,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
   // Filter fields
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [selectedStatuses, setSelectedStatuses] = useState([]);
 
   const today = new Date();
   const [startDate, setStartDate] = useState(today);
@@ -89,16 +103,29 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
   //   console.log("End Date:", formatDisplay(endDate));
   // }, [startDate, endDate]);
 
+  const handleStatusChange = (selected) => {
+    setSelectedStatuses(selected);
+    const joinedValues = selected.map((s) => s.value).join(","); // "2,3"
+    setStatusFilter(joinedValues);
+  };
+
   const handleStartExport = async () => {
     try {
       const payload =
         filterOption === "filtered"
-          ? {
-              search,
-              status: statusFilter,
-              startDate,
-              endDate,
-            }
+          ? type === "payments"
+            ? {
+                search,
+                is_forwarded: statusFilter, // ✅ sesuai Swagger
+                startDate,
+                endDate,
+              }
+            : {
+                search,
+                status: statusFilter,
+                startDate,
+                endDate,
+              }
           : {};
 
       const res = await exportFn(payload);
@@ -152,7 +179,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50 "
+      className="dark:text-black fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50 "
       onClick={(e) => {
         // pastikan klik di luar modal
         if (e.target === e.currentTarget && step === 1) {
@@ -197,7 +224,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                 <input
                   type="radio"
                   name="downloadOption"
-                  className="radio checked:bg-blue-500"
+                  className="radio checked:bg-blue-500 "
                   checked={filterOption === "all"}
                   onChange={() => setFilterOption("all")}
                 />
@@ -220,25 +247,38 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Cari (order_id / invoice / nama perusahaan / NPSN)"
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full  dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
 
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="select select-bordered w-full"
-                >
-                  <option value="">Semua Status</option>
-                  <option value="0">Pesanan Baru</option>
-                  <option value="2">Diproses</option>
-                  <option value="3">Dikirim</option>
-                  <option value="17">Diterima</option>
-                  <option value="18">Dibayar</option>
-                  <option value="20">Selesai</option>
-                  <option value="7">Dibatalkan</option>
-                  <option value="21">Ditutup</option>
-                </select>
-
+                {type === "payments" ? (
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="select select-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Semua</option>
+                    <option value="false">Diteruskan </option>
+                    <option value="true">Selesai </option>
+                  </select>
+                ) : (
+                  <Select
+                    isMulti
+                    options={statusOptions}
+                    value={selectedStatuses}
+                    onChange={handleStatusChange}
+                    placeholder="Pilih status..."
+                    classNamePrefix="react-select"
+                    className="dark:text-black"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        borderColor: "#d1d5db",
+                        borderRadius: "0.5rem",
+                        padding: "2px",
+                      }),
+                    }}
+                  />
+                )}
                 <div className="flex gap-10">
                   <div className="flex flex-col">
                     <label>Start Date</label>
@@ -246,7 +286,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                       selected={startDate}
                       onChange={(date) => setStartDate(date)}
                       dateFormat="dd/MM/yyyy"
-                      className="input input-bordered w-full"
+                      className="input input-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
 
@@ -256,7 +296,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                       selected={endDate}
                       onChange={(date) => setEndDate(date)}
                       dateFormat="dd/MM/yyyy"
-                      className="input input-bordered w-full"
+                      className="input input-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
                 </div>

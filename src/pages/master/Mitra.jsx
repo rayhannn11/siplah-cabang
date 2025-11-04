@@ -130,7 +130,9 @@ const Mitra = () => {
 
   return (
     <div className="p-4 mb-10">
-      <h1 className="text-3xl font-semibold mb-6">Daftar Rekanan Aktif</h1>
+      <h1 className="text-3xl font-semibold mb-6 dark:text-black">
+        Daftar Rekanan Aktif
+      </h1>
 
       <Table
         dataSource={dataSource}

@@ -19,8 +19,8 @@ const Payments = () => {
   const [search, setSearch] = useState("");
 
   const today = format(new Date(), "yyyy-MM-dd");
-  const [startDate, setStartDate] = useState(today);
-  const [endDate, setEndDate] = useState(today);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const [vaStatus, setVaStatus] = useState("");
   const [isForwarded, setIsForwarded] = useState("");
@@ -89,8 +89,10 @@ const Payments = () => {
     sekolah: "Sekolah",
 
     penyedia: "Penyedia",
+    biaya_admin: "Biaya Admin",
     total_tagihan: "Total Tagihan",
     total_transfer: "Total Transfer",
+    total_diteruskan: "Total Diteruskan",
     tgl_bayar: "Tgl Bayar",
     tgl_tf: "Tgl TF",
     status: "Status",
@@ -129,9 +131,12 @@ const Payments = () => {
       penyedia: item.toko,
       pph: formatNumberToRupiah(item.pph) || "Rp0",
       ppn: formatNumberToRupiah(item.ppn) || "Rp0",
+      biaya_admin: formatNumberToRupiah(item.biaya_admin) || "Rp0",
       total_tagihan: formatNumberToRupiah(item.total_tagihan) || "Rp0",
-
       total_transfer: formatNumberToRupiah(item.total_pembayaran) || "Rp0",
+      total_diteruskan:
+        formatNumberToRupiah(item.dana_diteruskan_penyedia) || "Rp0",
+
       tgl_bayar: item.tgl_pembayaran,
       tgl_tf: item.tgl_transfer || "-",
       status: item.singkat,
@@ -194,7 +199,9 @@ const Payments = () => {
 
   return (
     <div className="p-4 mb-10">
-      <h1 className="text-3xl font-semibold mb-6">Daftar Pembayaran</h1>
+      <h1 className="text-3xl font-semibold mb-6 dark:text-black">
+        Daftar Pembayaran
+      </h1>
       {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-white rounded-xl shadow-md mb-6">
                 <div className="card bg-[#1E3A8A] text-white shadow-md hover:shadow-lg transition transform hover:-translate-y-1 rounded-xl">
                     <div className="card-body">

@@ -17,8 +17,8 @@ const OrdersUnconfirmed = () => {
   const [status, setStatus] = useState("");
 
   const today = format(new Date(), "yyyy-MM-dd");
-  const [startDate, setStartDate] = useState(today);
-  const [endDate, setEndDate] = useState(today);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const debouncedSearch = useDebounce(search, 800);
 
@@ -161,7 +161,9 @@ const OrdersUnconfirmed = () => {
 
   return (
     <div className="p-4 mb-10">
-      <h1 className="text-3xl font-semibold mb-6">Orders Unconfirmed</h1>
+      <h1 className="text-3xl font-semibold mb-6 dark:text-black">
+        Orders Unconfirmed
+      </h1>
 
       <Table
         dataSource={dataSource}

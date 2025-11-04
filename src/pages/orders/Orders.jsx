@@ -21,8 +21,8 @@ const Orders = () => {
   const [status, setStatus] = useState("");
 
   const today = format(new Date(), "yyyy-MM-dd");
-  const [startDate, setStartDate] = useState(today);
-  const [endDate, setEndDate] = useState(today);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const [productStatus, setProductStatus] = useState("");
   const debouncedSearch = useDebounce(search, 800);
@@ -223,7 +223,9 @@ const Orders = () => {
 
   return (
     <div className="p-4 mb-10">
-      <h1 className="text-3xl font-semibold mb-6">Daftar Orders</h1>
+      <h1 className="text-3xl font-semibold mb-6 dark:text-black">
+        Daftar Orders
+      </h1>
 
       {/* 🔹 Order Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-white rounded-xl shadow-md mb-6">

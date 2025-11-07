@@ -1,6 +1,191 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+// import ExcelJS from "exceljs";
+// import fs from "fs";
+
+// export function exportCabangOrders(data) {
+//   const workbook = new ExcelJS.Workbook();
+//   const sheet = workbook.addWorksheet("Rekap Cabang");
+
+//   // Styling umum
+//   const titleStyle = {
+//     bold: true,
+//     font: { size: 14, color: { argb: "FFFFFFFF" } },
+//     fill: { type: "pattern", pattern: "solid", fgColor: { argb: "4472C4" } },
+//   };
+//   const headerStyle = {
+//     bold: true,
+//     fill: { type: "pattern", pattern: "solid", fgColor: { argb: "D9E1F2" } },
+//   };
+//   const orderHeaderStyle = {
+//     bold: true,
+//     fill: { type: "pattern", pattern: "solid", fgColor: { argb: "FCE4D6" } },
+//   };
+
+//   let currentRow = 1;
+
+//   for (const cabang of data) {
+//     // === 1️⃣ Header Cabang ===
+//     sheet.mergeCells(`A${currentRow}:H${currentRow}`);
+//     sheet.getCell(`A${currentRow}`).value = cabang.cabang_nama;
+//     sheet.getCell(`A${currentRow}`).style = titleStyle;
+//     currentRow++;
+
+//     // Info ringkas
+//     sheet.mergeCells(`A${currentRow}:H${currentRow}`);
+//     sheet.getCell(`A${currentRow}`).value =
+//       `Total Non HET: ${cabang.cabang_totals.non_formatted} | ` +
+//       `Tagihan 2%: ${cabang.cabang_totals.tagihan_2persen_formatted} | ` +
+//       `Jumlah Order: ${cabang.cabang_totals.order_count}`;
+//     sheet.getCell(`A${currentRow}`).style = headerStyle;
+//     currentRow += 2;
+
+//     // === 2️⃣ Header Pesanan ===
+//     const headers = [
+//       "No",
+//       "Invoice",
+//       "Tanggal",
+//       "Sekolah",
+//       "Mall",
+//       "Status",
+//       "Total",
+//       "Tagihan 2%",
+//     ];
+//     sheet.addRow(headers);
+//     headers.forEach((_, i) => {
+//       sheet.getCell(currentRow, i + 1).style = orderHeaderStyle;
+//     });
+//     currentRow++;
+
+//     // === 3️⃣ Data Pesanan ===
+//     cabang.orders.forEach((order, index) => {
+//       sheet.addRow([
+//         index + 1,
+//         order.invoice_no,
+//         new Date(order.date_added).toLocaleDateString("id-ID"),
+//         order.shipping_company,
+//         order.mall_name,
+//         order.status_name,
+//         order.total_formatted,
+//         order.tagihan_2persen_formatted,
+//       ]);
+//       currentRow++;
+//     });
+
+//     // Spasi antar cabang
+//     currentRow++;
+//   }
+
+//   // Lebar kolom
+//   sheet.columns = [
+//     { width: 5 },
+//     { width: 25 },
+//     { width: 15 },
+//     { width: 30 },
+//     { width: 25 },
+//     { width: 15 },
+//     { width: 20 },
+//     { width: 20 },
+//   ];
+
+//   const buffer = await workbook.xlsx.writeBuffer();
+//   fs.writeFileSync("Rekap_Cabang.xlsx", buffer);
+//   console.log("✅ File Excel berhasil dibuat: Rekap_Cabang.xlsx");
+// }
+
+// export const generateCabangReport = async (data) => {
+//   console.log("🚀 Generate report untuk cabang:", data);
+
+//   const workbook = new ExcelJS.Workbook();
+//   const sheet = workbook.addWorksheet("Laporan Cabang");
+
+//   // === HEADER ===
+//   sheet.mergeCells("A1:H1");
+//   const cabangHeader = sheet.getCell("A1");
+//   cabangHeader.value = `LAPORAN CABANG: ${data.cabang_nama}`;
+//   cabangHeader.alignment = { horizontal: "center", vertical: "middle" };
+//   cabangHeader.font = { size: 16, bold: true, color: { argb: "FFFFFFFF" } };
+//   cabangHeader.fill = {
+//     type: "pattern",
+//     pattern: "solid",
+//     fgColor: { argb: "FF1E88E5" },
+//   };
+//   sheet.getRow(1).height = 25;
+
+//   // === RINGKASAN ===
+//   const summary = [
+//     ["Total HET", data.cabang_totals.het_formatted],
+//     ["Total Non-HET", data.cabang_totals.non_formatted],
+//     ["Total Keseluruhan", data.cabang_totals.total_formatted],
+//     ["Tagihan 2%", data.cabang_totals.tagihan_2persen_formatted],
+//     ["Jumlah Order", data.cabang_totals.order_count],
+//   ];
+
+//   sheet.addRows(summary);
+//   sheet.getColumn(1).width = 25;
+//   sheet.getColumn(2).width = 20;
+
+//   // === HEADER TABEL ===
+//   sheet.addRow([]);
+//   const headers = [
+//     "No.",
+//     "Invoice No",
+//     "Tanggal",
+//     "Sekolah / Penerima",
+//     "Mall / Vendor",
+//     "Status",
+//     "Total",
+//     "Tagihan 2%",
+//   ];
+//   const headerRow = sheet.addRow(headers);
+//   headerRow.font = { bold: true, color: { argb: "FFFFFFFF" } };
+//   headerRow.fill = {
+//     type: "pattern",
+//     pattern: "solid",
+//     fgColor: { argb: "FF43A047" },
+//   };
+//   headerRow.alignment = { horizontal: "center" };
+
+//   // === ISI DATA ===
+//   data.orders.forEach((order, index) => {
+//     sheet.addRow([
+//       index + 1,
+//       order.invoice_no,
+//       new Date(order.date_added).toLocaleDateString("id-ID"),
+//       order.shipping_company,
+//       order.mall_name,
+//       order.status_name,
+//       order.total_formatted,
+//       order.tagihan_2persen_formatted,
+//     ]);
+//   });
+
+//   // === FOOTER ===
+//   sheet.addRow([]);
+//   const footer = sheet.addRow([
+//     "",
+//     "",
+//     `Dibuat pada: ${new Date().toLocaleString("id-ID")}`,
+//   ]);
+//   footer.font = { italic: true, color: { argb: "FF616161" } };
+
+//   // === 🚀 DOWNLOAD FILE (Browser-friendly) ===
+//   const buffer = await workbook.xlsx.writeBuffer();
+//   const blob = new Blob([buffer], {
+//     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+//   });
+
+//   const fileName = `Laporan_${data.cabang_nama.replace(/\s+/g, "_")}.xlsx`;
+//   const link = document.createElement("a");
+//   link.href = URL.createObjectURL(blob);
+//   link.download = fileName;
+//   link.click();
+//   URL.revokeObjectURL(link.href);
+
+//   console.log(`✅ File berhasil dibuat dan diunduh: ${fileName}`);
+// };
+
 export const formatHeader = (key) =>
   key
     .replace(/_/g, " ") // hapus underscore

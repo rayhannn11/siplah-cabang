@@ -5,6 +5,10 @@ import { Download, Search, Filter, ChevronDown, ChevronUp } from "lucide-react";
 import TableSkeleton from "../../components/loader/table-skeleton";
 import ErrorFetch from "../../components/error-fetch";
 
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import DownloadExcel from "../../components/download-excel";
+
 const PaymentEureka = () => {
   const { user } = useAuthStore();
   const [data, setData] = useState(null);
@@ -14,6 +18,8 @@ const PaymentEureka = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+
+  const [openDownloadModal, setOpenDownloadModal] = useState(false);
 
   // Filter states
   const [filters, setFilters] = useState({
@@ -87,6 +93,83 @@ const PaymentEureka = () => {
     return Array.from({ length: 6 }, (_, i) => currentYear - i);
   }, []);
 
+  console.log(data?.data, "data nya");
+
+  function handleDownloadExcel() {
+    const wb = XLSX.utils.book_new();
+
+    console.log("Cabang total:", data?.data?.length);
+    console.log("Semua cabang:", data?.data);
+
+    data?.data?.forEach((cabang, idx) => {
+      const ws_data = [];
+
+      ws_data.push([`Cabang: ${cabang.cabang_nama}`]);
+      ws_data.push([
+        `Total Order: ${cabang.cabang_totals.order_count}`,
+        `Total (HET): ${cabang.cabang_totals.het_formatted}`,
+        `Total (Non HET): ${cabang.cabang_totals.non_formatted}`,
+        `Tagihan 2%: ${cabang.cabang_totals.tagihan_2persen_formatted}`,
+        `Total Semua: ${cabang.cabang_totals.total_formatted}`,
+      ]);
+      ws_data.push([]);
+
+      const headers = [
+        "No",
+        "Invoice No",
+        "Tanggal Order",
+        "Sekolah / Pengiriman",
+        "Mall / Vendor",
+        "Status",
+        "Total Non HET",
+        "Total Keseluruhan",
+        "Tagihan 2%",
+      ];
+      ws_data.push(headers);
+
+      cabang.orders.forEach((order, i) => {
+        ws_data.push([
+          i + 1,
+          order.invoice_no,
+          new Date(order.date_added).toLocaleDateString("id-ID"),
+          order.shipping_company,
+          order.mall_name,
+          order.status_name,
+          order.non_formatted,
+          order.total_formatted,
+          order.tagihan_2persen_formatted,
+        ]);
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(ws_data);
+      ws["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }];
+
+      ws["!cols"] = [
+        { wch: 5 },
+        { wch: 22 },
+        { wch: 15 },
+        { wch: 30 },
+        { wch: 25 },
+        { wch: 15 },
+        { wch: 18 },
+        { wch: 18 },
+        { wch: 15 },
+      ];
+
+      XLSX.utils.book_append_sheet(
+        wb,
+        ws,
+        `${cabang.cabang_nama.substring(0, 25)}`
+      );
+    });
+
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    saveAs(
+      new Blob([wbout], { type: "application/octet-stream" }),
+      "Laporan_Cabang.xlsx"
+    );
+  }
+
   if (error) {
     return (
       <div className="p-4 mb-10">
@@ -105,13 +188,28 @@ const PaymentEureka = () => {
         <h1 className="text-3xl font-semibold dark:text-black">
           Tagihan Eureka
         </h1>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-        >
-          <Filter size={18} />
-          {showFilters ? "Hide Filters" : "Show Filters"}
-        </button>
+
+        <div className="flex justify-between items-center mb-4">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="cursor-pointer flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
+            <Filter size={18} />
+            {showFilters ? "Hide Filters" : "Show Filters"}
+          </button>{" "}
+          <button
+            onClick={() => setOpenDownloadModal(true)}
+            disabled={!data?.data} // 🔒 kalau belum ada data.data, tombol disable
+            className={`ml-4 flex items-center gap-2 px-4 py-2 rounded transition
+    ${
+      data?.data
+        ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer"
+        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+    }`}
+          >
+            Download Excel
+          </button>
+        </div>
       </div>
 
       {/* Filter Section */}
@@ -500,6 +598,16 @@ const PaymentEureka = () => {
               <option value={50}>50</option>
             </select>
           </div>
+        </div>
+      )}
+
+      {openDownloadModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50 ">
+          <DownloadExcel
+            open={openDownloadModal}
+            onClose={() => setOpenDownloadModal(false)}
+            type="tagihan"
+          />
         </div>
       )}
     </div>

@@ -127,6 +127,7 @@ const Payments = () => {
       invoice_no: item.invoice_no,
       pemesan: `${item.cfname} ${item.clname}`.trim(),
       sekolah: item.shipping_company,
+      kabupaten: item.shipping_city,
       kecamatan: item.shipping_kecamatan,
       penyedia: item.toko,
       pph: formatNumberToRupiah(item.pph) || "Rp0",

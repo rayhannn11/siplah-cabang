@@ -39,7 +39,7 @@ const Mitra = () => {
     bank: "Bank",
     no_rekening: "No. Rekening",
     nama_pic: "Nama PIC",
-    kota: "Kota",
+    kota: "Kabupaten",
     approve: "Status",
   };
 

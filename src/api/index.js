@@ -255,6 +255,43 @@ export const fetchOrdersReport = async ({
   return res.data;
 };
 
+export const exportTagihanStatus = async (jobId) => {
+  if (!jobId)
+    throw new Error("❌ jobId wajib diisi untuk cek status export report");
+
+  const res = await axios.get(`payments/report-eureka/export/status/${jobId}`);
+  return res.data;
+};
+
+export const exportTagihanReport = async ({
+  startDate = "",
+  endDate = "",
+  month = "",
+  year = "",
+  no_invoice = "",
+}) => {
+  const params = new URLSearchParams();
+
+  // 🧠 Prioritas: startDate & endDate → else month/year
+  if (startDate) params.append("startDate", startDate);
+  if (endDate) params.append("endDate", endDate);
+
+  if (!startDate && !endDate) {
+    if (month) params.append("month", month);
+    if (year) params.append("year", year);
+  }
+
+  if (no_invoice) params.append("no_invoice", no_invoice);
+
+  // 📡 POST ke endpoint export Tagihan Report
+  const res = await axios.post(
+    `payments/report-eureka/export?${params.toString()}`
+  );
+
+  // 🔙 Response: { jobId, message, status, ... }
+  return res.data;
+};
+
 export const exportPaymentStatus = async (id) => {
   const res = await axios.get(`payments/orders-report/export/status/${id}`);
   return res.data;

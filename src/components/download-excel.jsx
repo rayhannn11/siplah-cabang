@@ -4,6 +4,8 @@ import {
   exportOrdersStatus,
   exportPaymentsReport,
   exportPaymentStatus,
+  exportTagihanStatus,
+  exportTagihanReport,
 } from "../api";
 import { useAuthStore } from "../stores";
 
@@ -28,10 +30,20 @@ const statusOptions = [
 
 export default function DownloadExcel({ type = "orders", open, onClose }) {
   const { token } = useAuthStore();
-  const exportFn = type === "payments" ? exportPaymentsReport : exportOrders;
+
+  const exportFn =
+    type === "tagihan"
+      ? exportTagihanReport
+      : type === "payments"
+      ? exportPaymentsReport
+      : exportOrders;
 
   const checkStatusFn =
-    type === "payments" ? exportPaymentStatus : exportOrdersStatus;
+    type === "tagihan"
+      ? exportTagihanStatus
+      : type === "payments"
+      ? exportPaymentStatus
+      : exportOrdersStatus;
 
   const [step, setStep] = useState(1);
   const [filterOption, setFilterOption] = useState("all");
@@ -50,6 +62,11 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
   const today = new Date();
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(today);
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState(new Date().getFullYear());
+
+  const [tagihanFilterMode, setTagihanFilterMode] = useState("date");
+
   // Polling status export tiap 2 detik
   useEffect(() => {
     if (!jobId || step !== 2) return;
@@ -111,22 +128,51 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
 
   const handleStartExport = async () => {
     try {
-      const payload =
-        filterOption === "filtered"
-          ? type === "payments"
-            ? {
-                search,
-                is_forwarded: statusFilter, // ✅ sesuai Swagger
-                startDate,
-                endDate,
-              }
-            : {
-                search,
-                status: statusFilter,
-                startDate,
-                endDate,
-              }
-          : {};
+      // const payload =
+      //   filterOption === "filtered"
+      //     ? type === "payments"
+      //       ? {
+      //           search,
+      //           is_forwarded: statusFilter, // ✅ sesuai Swagger
+      //           startDate,
+      //           endDate,
+      //         }
+      //       : {
+      //           search,
+      //           status: statusFilter,
+      //           startDate,
+      //           endDate,
+      //         }
+      //     : {};
+      let payload = {};
+
+      if (filterOption === "filtered") {
+        if (type === "tagihan") {
+          // payload =
+          //   startDate && endDate ? { startDate, endDate } : { month, year };
+          if (tagihanFilterMode === "date") {
+            payload = { startDate, endDate };
+          } else {
+            payload = { month, year };
+          }
+        } else if (type === "payments") {
+          // 💰 PAYMENTS
+          payload = {
+            search,
+            is_forwarded: statusFilter,
+            startDate,
+            endDate,
+          };
+        } else {
+          // 📦 ORDERS
+          payload = {
+            search,
+            status: statusFilter,
+            startDate,
+            endDate,
+          };
+        }
+      }
 
       const res = await exportFn(payload);
       if (res?.data?.jobId) {
@@ -194,7 +240,11 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">
             Download Recap Excel{" "}
-            {type === "payments" ? "Pembayaran" : "Pesanan"}
+            {type === "tagihan"
+              ? "Tagihan"
+              : type === "payments"
+              ? "Pembayaran"
+              : "Pesanan"}
           </h2>
           {/* {step === 1 && (
             <button
@@ -250,7 +300,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                   className="input input-bordered w-full  dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
 
-                {type === "payments" ? (
+                {/* {type === "payments" ? (
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
@@ -278,28 +328,174 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                       }),
                     }}
                   />
-                )}
-                <div className="flex gap-10">
-                  <div className="flex flex-col">
-                    <label>Start Date</label>
-                    <DatePicker
-                      selected={startDate}
-                      onChange={(date) => setStartDate(date)}
-                      dateFormat="dd/MM/yyyy"
-                      className="input input-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
+                )} */}
 
-                  <div className="flex flex-col">
-                    <label>End Date</label>
-                    <DatePicker
-                      selected={endDate}
-                      onChange={(date) => setEndDate(date)}
-                      dateFormat="dd/MM/yyyy"
-                      className="input input-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
+                {type === "payments" ? (
+                  // 💰 FILTER UNTUK PAYMENTS
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="select select-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Semua</option>
+                    <option value="false">Diteruskan</option>
+                    <option value="true">Selesai</option>
+                  </select>
+                ) : type === "orders" ? (
+                  // 📦 FILTER UNTUK ORDERS
+                  <Select
+                    isMulti
+                    options={statusOptions}
+                    value={selectedStatuses}
+                    onChange={handleStatusChange}
+                    placeholder="Pilih status..."
+                    classNamePrefix="react-select"
+                    className="dark:text-black"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        borderColor: "#d1d5db",
+                        borderRadius: "0.5rem",
+                        padding: "2px",
+                      }),
+                    }}
+                  />
+                ) : null}
+
+                {type === "tagihan" && (
+                  <div className="space-y-4">
+                    {/* === 🔘 PILIH MODE FILTER === */}
+                    <div className="form-control">
+                      <label className="label cursor-pointer">
+                        <span className="label-text font-medium">
+                          Gunakan Rentang Tanggal
+                        </span>
+                        <input
+                          type="radio"
+                          name="tagihanFilterMode"
+                          className="radio checked:bg-blue-500"
+                          checked={tagihanFilterMode === "date"}
+                          onChange={() => setTagihanFilterMode("date")}
+                        />
+                      </label>
+
+                      <label className="ml-6 label cursor-pointer">
+                        <span className="label-text font-medium">
+                          Gunakan Bulan & Tahun
+                        </span>
+                        <input
+                          type="radio"
+                          name="tagihanFilterMode"
+                          className="radio checked:bg-blue-500"
+                          checked={tagihanFilterMode === "year"}
+                          onChange={() => setTagihanFilterMode("year")}
+                        />
+                      </label>
+                    </div>
+
+                    {/* === 📆 RANGE DATE MODE === */}
+                    {tagihanFilterMode === "date" && (
+                      <div className="flex gap-10">
+                        <div className="flex flex-col">
+                          <label>Start Date</label>
+                          <DatePicker
+                            selected={startDate}
+                            onChange={(date) => setStartDate(date)}
+                            dateFormat="dd/MM/yyyy"
+                            className="input input-bordered w-full dark:text-black dark:bg-white focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+
+                        <div className="flex flex-col">
+                          <label>End Date</label>
+                          <DatePicker
+                            selected={endDate}
+                            onChange={(date) => setEndDate(date)}
+                            dateFormat="dd/MM/yyyy"
+                            className="input input-bordered w-full dark:text-black dark:bg-white focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* === 🗓️ RANGE YEAR MODE === */}
+                    {tagihanFilterMode === "year" &&
+                      (() => {
+                        const currentYear = new Date().getFullYear();
+                        const years = Array.from(
+                          { length: currentYear - 2018 },
+                          (_, i) => 2019 + i
+                        );
+                        const months = [
+                          { value: 1, label: "Januari" },
+                          { value: 2, label: "Februari" },
+                          { value: 3, label: "Maret" },
+                          { value: 4, label: "April" },
+                          { value: 5, label: "Mei" },
+                          { value: 6, label: "Juni" },
+                          { value: 7, label: "Juli" },
+                          { value: 8, label: "Agustus" },
+                          { value: 9, label: "September" },
+                          { value: 10, label: "Oktober" },
+                          { value: 11, label: "November" },
+                          { value: 12, label: "Desember" },
+                        ];
+
+                        return (
+                          <div className="flex gap-3">
+                            <select
+                              value={month}
+                              onChange={(e) => setMonth(e.target.value)}
+                              className="select select-bordered w-1/2 dark:text-black dark:bg-white"
+                            >
+                              <option value="">Semua Bulan</option>
+                              {months.map((m) => (
+                                <option key={m.value} value={m.value}>
+                                  {m.label}
+                                </option>
+                              ))}
+                            </select>
+
+                            <select
+                              value={year}
+                              onChange={(e) => setYear(e.target.value)}
+                              className="select select-bordered w-1/2 dark:text-black dark:bg-white"
+                            >
+                              {years.map((y) => (
+                                <option key={y} value={y}>
+                                  {y}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        );
+                      })()}
                   </div>
-                </div>
+                )}
+
+                {type !== "tagihan" && (
+                  <div className="flex gap-10">
+                    <div className="flex flex-col">
+                      <label>Start Date</label>
+                      <DatePicker
+                        selected={startDate}
+                        onChange={(date) => setStartDate(date)}
+                        dateFormat="dd/MM/yyyy"
+                        className="input input-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+
+                    <div className="flex flex-col">
+                      <label>End Date</label>
+                      <DatePicker
+                        selected={endDate}
+                        onChange={(date) => setEndDate(date)}
+                        dateFormat="dd/MM/yyyy"
+                        className="input input-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

@@ -105,6 +105,7 @@ const OrdersUnconfirmed = () => {
       tagihan: formatNumberToRupiah(item.tagihan),
       toko: item.toko,
       wilayah: item.wilayah,
+      kabupaten: item.shipping_city,
       kecamatan: item.shipping_kecamatan,
       tgl_order: item.tgl_order,
       status: item.status,

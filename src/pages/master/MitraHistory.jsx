@@ -57,7 +57,7 @@ const MitraHistory = () => {
     bank: "Bank",
     no_rekening: "No Rekening",
     nama_pic: "Nama PIC",
-    kota: "Kota",
+    kota: "Kabupaten",
     kecamatan: "Kecamatan",
     kelurahan: "Kelurahan",
     telp: "Telp",

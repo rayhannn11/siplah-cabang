@@ -126,6 +126,11 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
     setStatusFilter(joinedValues);
   };
 
+  const formatDate = (date) => {
+    if (!date) return null;
+    return date.toISOString().split("T")[0]; // hasil: "2025-11-08"
+  };
+
   const handleStartExport = async () => {
     try {
       // const payload =
@@ -151,7 +156,10 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
           // payload =
           //   startDate && endDate ? { startDate, endDate } : { month, year };
           if (tagihanFilterMode === "date") {
-            payload = { startDate, endDate };
+            payload = {
+              startDate: formatDate(startDate),
+              endDate: formatDate(endDate),
+            };
           } else {
             payload = { month, year };
           }

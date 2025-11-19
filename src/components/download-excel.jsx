@@ -346,8 +346,8 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                     className="select select-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Semua</option>
-                    <option value="false">Diteruskan</option>
-                    <option value="true">Selesai</option>
+                    <option value="false">Belum Diteruskan</option>
+                    <option value="true">Diteruskan</option>
                   </select>
                 ) : type === "orders" ? (
                   // 📦 FILTER UNTUK ORDERS
@@ -411,6 +411,9 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                             onChange={(date) => setStartDate(date)}
                             dateFormat="dd/MM/yyyy"
                             className="input input-bordered w-full dark:text-black dark:bg-white focus:ring-2 focus:ring-blue-500"
+                            showMonthDropdown
+                            showYearDropdown
+                            maxDate={new Date(new Date().getFullYear(), 11, 31)}
                           />
                         </div>
 
@@ -421,6 +424,9 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                             onChange={(date) => setEndDate(date)}
                             dateFormat="dd/MM/yyyy"
                             className="input input-bordered w-full dark:text-black dark:bg-white focus:ring-2 focus:ring-blue-500"
+                            showMonthDropdown
+                            showYearDropdown
+                            maxDate={new Date(new Date().getFullYear(), 11, 31)}
                           />
                         </div>
                       </div>
@@ -490,6 +496,9 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                         onChange={(date) => setStartDate(date)}
                         dateFormat="dd/MM/yyyy"
                         className="input input-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        showMonthDropdown
+                        showYearDropdown
+                        maxDate={new Date(new Date().getFullYear(), 11, 31)} // inline max year = current year
                       />
                     </div>
 
@@ -500,6 +509,9 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                         onChange={(date) => setEndDate(date)}
                         dateFormat="dd/MM/yyyy"
                         className="input input-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        showMonthDropdown
+                        showYearDropdown
+                        maxDate={new Date(new Date().getFullYear(), 11, 31)} // inline max year = current year
                       />
                     </div>
                   </div>

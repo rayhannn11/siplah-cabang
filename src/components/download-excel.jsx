@@ -228,7 +228,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
       setError("Terjadi kesalahan saat mengunduh file.");
     }
   };
-
+  console.log("terst");
   if (!open) return null;
 
   return (

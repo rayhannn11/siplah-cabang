@@ -353,3 +353,61 @@ export const exportOrdersStatus = async (id) => {
     const res = await axios.get(`orders/export/${id}`);
     return res.data;
 };
+
+// ========== PROVIDER TRANSACTIONS API ==========
+
+export const searchProviders = async ({ search = "", limit = 20 }) => {
+    const params = new URLSearchParams();
+
+    if (search) params.append("search", search);
+    if (limit) params.append("limit", limit);
+
+    const res = await axios.get(`order-all-seller/providers/search?${params.toString()}`);
+    return res.data;
+};
+
+export const exportProviderTransactions = async ({ mall_id = [], year }) => {
+    if (!year) throw new Error("Year is required for provider transactions export");
+
+    const body = {
+        mall_id: Array.isArray(mall_id) ? mall_id : [mall_id],
+        year,
+    };
+
+    const res = await axios.post("order-all-seller/export", body);
+    return res.data;
+};
+
+export const checkProviderExportStatus = async (jobId) => {
+    if (!jobId) throw new Error("Job ID is required to check export status");
+
+    const res = await axios.get(`order-all-seller/export/${jobId}`);
+    return res.data;
+};
+
+export const downloadProviderExport = async (jobId, token) => {
+    if (!jobId) throw new Error("Job ID is required to download export");
+
+    const response = await fetch(
+        `https://api.siplah.dashboard.eurekagroup.id/api/v1/cabang/order-all-seller/export/download/${jobId}`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            },
+        }
+    );
+
+    if (!response.ok) throw new Error("Failed to download file");
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `provider_transactions_${jobId}_${Date.now()}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+};

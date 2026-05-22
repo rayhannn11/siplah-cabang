@@ -15,7 +15,8 @@ import Select from "react-select";
 
 import { format } from "date-fns";
 
-const DOWNLOAD_PREFIX = "https://api.siplah.dashboard.eurekagroup.id";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_ORIGIN = new URL(API_BASE_URL).origin;
 
 const statusOptions = [
   { value: "0", label: "Pesanan Baru" },
@@ -198,30 +199,62 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
   };
 
   const handleDownload = async () => {
-    if (!statusData?.data?.file?.url) {
+    let latestStatus = statusData;
+
+    if (jobId) {
+      try {
+        const res = await checkStatusFn(jobId);
+        if (res?.data) {
+          latestStatus = res;
+          setStatusData(res);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    if (!latestStatus?.data?.file?.url) {
       setError(
-        "File tidak tersedia pada response. Silakan coba lagi atau hubungi tim IT."
+        "File belum siap diunduh. Silakan tunggu beberapa detik lalu coba lagi."
       );
       return;
     }
 
-    const fileUrl = DOWNLOAD_PREFIX + statusData.data.file.url;
+    const fileUrl = new URL(latestStatus.data.file.url, API_ORIGIN).toString();
 
     try {
       const response = await fetch(fileUrl, {
         method: "GET",
         headers: {
+          Accept:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) throw new Error("Gagal mengunduh file.");
+      if (!response.ok) {
+        throw new Error("Gagal mengunduh file.");
+      }
+
+      const contentType = response.headers.get("content-type") || "";
+      if (
+        !contentType.includes(
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ) &&
+        !contentType.includes("application/octet-stream")
+      ) {
+        throw new Error("Response download bukan file Excel.");
+      }
 
       const blob = await response.blob();
+      if (!blob.size) {
+        throw new Error("File download kosong.");
+      }
+
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = statusData.data.file.filename || `rekap_${Date.now()}.xlsx`;
+      a.download = latestStatus.data.file.filename || `rekap_${Date.now()}.xlsx`;
       document.body.appendChild(a);
       a.click();
       a.remove();

@@ -1,5 +1,7 @@
 import axios from "../lib/axios";
 
+const API_ORIGIN = new URL(import.meta.env.VITE_API_URL).origin;
+
 export const fetchOrders = async ({
     page = 1,
     limit = 10,
@@ -389,7 +391,7 @@ export const downloadProviderExport = async (jobId, token) => {
     if (!jobId) throw new Error("Job ID is required to download export");
 
     const response = await fetch(
-        `https://api.siplah.dashboard.eurekagroup.id/api/v1/cabang/order-all-seller/export/download/${jobId}`,
+        new URL(`/api/v1/cabang/order-all-seller/export/download/${jobId}`, API_ORIGIN).toString(),
         {
             method: "GET",
             headers: {

@@ -83,7 +83,7 @@ const Mitra = () => {
         <button
           onClick={(e) => {
             e.stopPropagation(); // 🔥 mencegah trigger redirect row
-            window.location.href = `/internal/mitraku/orders?rekanan=${item.mall_id}`;
+            window.location.href = `/orders?rekanan=${item.mall_id}`;
           }}
           className="btn btn-sm bg-[#FFC107] text-black text-nowrap hover:bg-[#e9b825]"
         >
@@ -167,7 +167,7 @@ const Mitra = () => {
 
           // 👇 callback ketika diklik
           onRowRedirect: (row) => {
-            window.location.href = `/internal/mitraku/rekanan/detail/${row.mall_id}`;
+            window.location.href = `/rekanan/detail/${row.mall_id}`;
           },
         }}
       />

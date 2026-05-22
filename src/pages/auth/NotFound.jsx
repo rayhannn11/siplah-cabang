@@ -13,7 +13,7 @@ export default function NotFound() {
           Maaf, halaman yang kamu cari tidak tersedia atau telah dipindahkan.
         </p>
         <Link
-          to="/internal/mitraku/login"
+          to="/login"
           className="btn btn-sm btn-primary normal-case"
         >
           Kembali ke halaman Login

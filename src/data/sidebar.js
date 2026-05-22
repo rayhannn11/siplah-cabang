@@ -157,7 +157,7 @@ export const adminNavigation = [
         items: [
             {
                 name: "Dashboard",
-                href: "/internal/mitraku/dashboard",
+                href: "/dashboard",
                 icon: LayoutDashboard,
                 tourId: "menu-dashboard", // ✅ tambahin ini
             },
@@ -168,13 +168,13 @@ export const adminNavigation = [
         items: [
             {
                 name: "Semua Pesanan",
-                href: "/internal/mitraku/orders",
+                href: "/orders",
                 icon: Package2,
                 tourId: "menu-orders", // ✅
             },
             {
                 name: "Pesanan Belum Konfirmasi",
-                href: "/internal/mitraku/orders/unconfirmed",
+                href: "/orders/unconfirmed",
                 icon: FileWarning,
                 tourId: "menu-unconfirmed", // ✅
             },
@@ -185,7 +185,7 @@ export const adminNavigation = [
         items: [
             {
                 name: "Pembayaran",
-                href: "/internal/mitraku/payments/all",
+                href: "/payments/all",
                 icon: Wallet,
                 tourId: "menu-finance", // ✅
             },
@@ -196,19 +196,19 @@ export const adminNavigation = [
         items: [
             {
                 name: "Rekanan Aktif",
-                href: "/internal/mitraku/rekanan",
+                href: "/rekanan",
                 icon: Users,
                 tourId: "menu-rekanan-active", // ✅
             },
             {
                 name: "Rekanan Nonaktif",
-                href: "/internal/mitraku/rekanan/nonaktif",
+                href: "/rekanan/nonaktif",
                 icon: ShieldAlert,
                 tourId: "menu-rekanan-inactive", // ✅
             },
             {
                 name: "Rekanan History",
-                href: "/internal/mitraku/rekanan/history",
+                href: "/rekanan/history",
                 icon: History,
                 tourId: "menu-rekanan-history", // ✅
             },
@@ -219,21 +219,21 @@ export const adminNavigation = [
         items: [
             {
                 name: "Tagihan Eureka",
-                href: "/internal/mitraku/report/payment-eureka",
+                href: "/report/payment-eureka",
                 icon: FileText,
                 tourId: "menu-tagihan-eureka",
                 visibleFor: [49], // Only visible for cabang_id 49
             },
             {
                 name: "Tagihan Cabang",
-                href: "/internal/mitraku/report/orders-report",
+                href: "/report/orders-report",
                 icon: ChartNoAxesCombined,
                 tourId: "menu-tagihan-cabang",
                 visibleFor: [49],
             },
             {
                 name: "Tarik Transaksi Penyedia",
-                href: "/internal/mitraku/report/provider-transactions",
+                href: "/report/provider-transactions",
                 icon: ShoppingCart,
                 tourId: "menu-provider-transactions",
                 visibleFor: [49],
@@ -245,7 +245,7 @@ export const adminNavigation = [
         items: [
             {
                 name: "Profil",
-                href: "/internal/mitraku/profile",
+                href: "/profile",
                 icon: User,
                 tourId: "menu-profile", // ✅
             },

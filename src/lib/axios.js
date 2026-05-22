@@ -6,7 +6,7 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 
 function handleLogout() {
   useAuthStore.getState().clearToken(); // update store dan localStorage
-  window.location.href = "/internal/mitraku/login";
+  window.location.href = "/login";
 }
 
 const api = axios.create({

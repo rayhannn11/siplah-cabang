@@ -33,97 +33,97 @@ const ProviderTransactions = lazy(() => import("../pages/report/ProviderTransact
 const AdminRoutes = () => {
     const fullRoutes = [
         // Dashboard
-        { path: "/internal/mitraku/dashboard", element: <Dashboard /> },
+        { path: "/dashboard", element: <Dashboard /> },
 
         // Dari CV
-        { path: "/internal/mitraku/orders", element: <Orders mode="dariEureka" /> },
+        { path: "/orders", element: <Orders mode="dariEureka" /> },
         {
-            path: "/internal/mitraku/orders/unconfirmed",
+            path: "/orders/unconfirmed",
             element: <OrdersUnconfirmed mode="dariEureka" />,
         },
 
-        { path: "/internal/mitraku/orders/all", element: <Orders mode="all" /> },
-        { path: "/internal/mitraku/orders/new", element: <Orders mode="new" /> },
+        { path: "/orders/all", element: <Orders mode="all" /> },
+        { path: "/orders/new", element: <Orders mode="new" /> },
         {
-            path: "/internal/mitraku/orders/processing",
+            path: "/orders/processing",
             element: <Orders mode="processing" />,
         },
         {
-            path: "/internal/mitraku/orders/shipped",
+            path: "/orders/shipped",
             element: <Orders mode="shipped" />,
         },
         {
-            path: "/internal/mitraku/orders/expired",
+            path: "/orders/expired",
             element: <Orders mode="expired" />,
         },
         {
-            path: "/internal/mitraku/orders/cancelled",
+            path: "/orders/cancelled",
             element: <Orders mode="cancelled" />,
         },
-        { path: "/internal/mitraku/orders/detail/:id", element: <DetailOrder /> },
+        { path: "/orders/detail/:id", element: <DetailOrder /> },
 
         // Pembayaran
         {
-            path: "/internal/mitraku/payments/all",
+            path: "/payments/all",
             element: <Payments mode="all" />,
         },
         {
-            path: "/internal/mitraku/payments/incomplete",
+            path: "/payments/incomplete",
             element: <Payments mode="incomplete" />,
         },
         {
-            path: "/internal/mitraku/payments/verification",
+            path: "/payments/verification",
             element: <Payments mode="verification" />,
         },
 
         {
-            path: "/internal/mitraku/payments/unconfirmed",
+            path: "/payments/unconfirmed",
             element: <Payments mode="unconfirmed" />,
         },
-        { path: "/internal/mitraku/payments/:id", element: <DetailPayment /> },
+        { path: "/payments/:id", element: <DetailPayment /> },
 
         // Master
-        { path: "/internal/mitraku/rekanan", element: <Mitra /> },
+        { path: "/rekanan", element: <Mitra /> },
         {
-            path: "/internal/mitraku/rekanan/orders/:id",
+            path: "/rekanan/orders/:id",
             element: <Orders mode="mitraOrders" />,
         },
         {
-            path: "/internal/mitraku/rekanan/order/:id",
+            path: "/rekanan/order/:id",
             element: <DetailOrder mode="mitraDetailOrder" />,
         },
         {
-            path: "/internal/mitraku/rekanan/detail/:id",
+            path: "/rekanan/detail/:id",
             element: <MitraDetail />,
         },
-        { path: "/internal/mitraku/rekanan/history", element: <MitraHistory /> },
-        { path: "/internal/mitraku/rekanan/nonaktif", element: <MitraNonAktif /> },
+        { path: "/rekanan/history", element: <MitraHistory /> },
+        { path: "/rekanan/nonaktif", element: <MitraNonAktif /> },
         {
-            path: "/internal/mitraku/rekanan/payments-report",
+            path: "/rekanan/payments-report",
             element: <PaymentsReport />,
         },
 
         // Laporan Payment
         {
-            path: "/internal/mitraku/report/payment-satdik",
+            path: "/report/payment-satdik",
             element: <PaymentSatdik />,
         },
-        { path: "/internal/mitraku/report/payment-cv", element: <PaymentSchool /> },
+        { path: "/report/payment-cv", element: <PaymentSchool /> },
         {
-            path: "/internal/mitraku/report/payment-eureka",
+            path: "/report/payment-eureka",
             element: <PaymentEureka />,
         },
         {
-            path: "/internal/mitraku/report/orders-report",
+            path: "/report/orders-report",
             element: <OrdersReport />,
         },
         {
-            path: "/internal/mitraku/report/provider-transactions",
+            path: "/report/provider-transactions",
             element: <ProviderTransactions />,
         },
 
         // Lain-lain
-        { path: "/internal/mitraku/profile", element: <Profile /> },
+        { path: "/profile", element: <Profile /> },
     ];
 
     return fullRoutes;

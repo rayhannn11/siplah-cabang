@@ -67,7 +67,7 @@ const Login = () => {
             // });
 
             // 3. Redirect
-            navigate("/internal/mitraku/dashboard");
+            navigate("/dashboard");
           } else {
             Swal.fire({
               icon: "error",

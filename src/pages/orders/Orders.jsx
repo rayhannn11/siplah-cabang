@@ -325,7 +325,7 @@ const Orders = () => {
 
           // 👇 callback ketika diklik
           onRowRedirect: (row) => {
-            window.location.href = `/internal/mitraku/orders/detail/${row.order_id}`;
+            window.location.href = `/orders/detail/${row.order_id}`;
           },
         }}
         filterConfig={{

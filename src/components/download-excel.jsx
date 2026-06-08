@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
+  fetchOrders,
   exportOrders,
   exportOrdersResult,
   exportOrdersStatus,
@@ -18,15 +19,33 @@ import Select from "react-select";
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 const API_ORIGIN = new URL(API_BASE_URL).origin;
 
-const statusOptions = [
+const fallbackOrderStatusOptions = [
+  { value: "", label: "Semua Status" },
   { value: "0", label: "Pesanan Baru" },
   { value: "2", label: "Diproses" },
   { value: "3", label: "Dikirim" },
-  { value: "17", label: "Diterima" },
-  { value: "18", label: "Dibayar" },
-  { value: "20", label: "Selesai" },
+  { value: "4", label: "Sampai" },
+  { value: "5", label: "Diterima" },
   { value: "7", label: "Dibatalkan" },
+  { value: "8", label: "Ditolak Penyedia" },
+  { value: "9", label: "Ditangguhkan Mitra" },
+  { value: "10", label: "Pesanan Dibekukan" },
+  {
+    value: "12",
+    label: "Penolakan Pengajuan Pembatalan oleh Penyedia atau Mitra SIPLah Eureka",
+  },
+  {
+    value: "13",
+    label: "Penolakan Pengajuan Pembatalan oleh Penyedia atau Mitra SIPLah Eureka",
+  },
+  { value: "14", label: "Kadaluarsa" },
+  { value: "16", label: "Proses eBAST" },
+  { value: "17", label: "Belum dibayar" },
+  { value: "18", label: "Dibayar" },
+  { value: "19", label: "Ditolak Pembeli" },
+  { value: "20", label: "Selesai" },
   { value: "21", label: "Ditutup" },
+  { value: "22", label: "Pengajuan Pembatalan dari Sekolah" },
 ];
 
 export default function DownloadExcel({ type = "orders", open, onClose }) {
@@ -36,27 +55,30 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
     type === "tagihan"
       ? exportTagihanReport
       : type === "payments"
-      ? exportPaymentsReport
-      : exportOrders;
+        ? exportPaymentsReport
+        : exportOrders;
 
   const checkStatusFn =
     type === "tagihan"
       ? exportTagihanStatus
       : type === "payments"
-      ? exportPaymentStatus
-      : exportOrdersStatus;
+        ? exportPaymentStatus
+        : exportOrdersStatus;
 
   const resultFn =
     type === "payments"
       ? exportPaymentResult
       : type === "orders"
-      ? exportOrdersResult
-      : null;
-  const isNewExport = type === "orders" || type === "payments" || type === "tagihan";
+        ? exportOrdersResult
+        : null;
+  const isNewExport =
+    type === "orders" || type === "payments" || type === "tagihan";
   const canSelectFormat = type === "orders" || type === "payments";
 
   const [step, setStep] = useState(1);
-  const [filterOption, setFilterOption] = useState(isNewExport ? "filtered" : "all");
+  const [filterOption, setFilterOption] = useState(
+    isNewExport ? "filtered" : "all",
+  );
   const [jobId, setJobId] = useState(null);
   const [statusData, setStatusData] = useState(null);
   const [error, setError] = useState(null);
@@ -68,6 +90,10 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState([]);
+  const [orderStatusOptions, setOrderStatusOptions] = useState(
+    fallbackOrderStatusOptions,
+  );
+  const [loadingStatusOptions, setLoadingStatusOptions] = useState(false);
   const [forwardedFilter, setForwardedFilter] = useState("");
   const [exportFormat, setExportFormat] = useState("xlsx");
 
@@ -116,21 +142,68 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
     setStatusFilter(joinedValues);
   };
 
+  useEffect(() => {
+    if (!open || type !== "orders") return;
+
+    let cancelled = false;
+
+    const loadOrderStatusOptions = async () => {
+      try {
+        setLoadingStatusOptions(true);
+        const response = await fetchOrders({ page: 1, limit: 10, status: "0" });
+        const rawOptions = response?.filters?.status;
+
+        if (!cancelled && Array.isArray(rawOptions) && rawOptions.length > 0) {
+          const normalizedOptions = rawOptions
+            .filter((item) => item && item.value !== undefined)
+            .map((item) => ({
+              value: String(item.value),
+              label: item.name,
+            }));
+
+          setOrderStatusOptions(normalizedOptions);
+          return;
+        }
+      } catch (err) {
+        console.error("Gagal mengambil filter status order:", err);
+      } finally {
+        if (!cancelled) setLoadingStatusOptions(false);
+      }
+
+      if (!cancelled) {
+        setOrderStatusOptions(fallbackOrderStatusOptions);
+      }
+    };
+
+    loadOrderStatusOptions();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, type]);
+
   const formatDate = (date) => {
     if (!date) return null;
     return date.toISOString().split("T")[0]; // hasil: "2025-11-08"
   };
 
-  const exportPayload = useCallback((response) => response?.data || response || {}, []);
-  const exportJobId = useCallback((payload) => payload?.jobId || payload?.job_id, []);
+  const exportPayload = useCallback(
+    (response) => response?.data || response || {},
+    [],
+  );
+  const exportJobId = useCallback(
+    (payload) => payload?.jobId || payload?.job_id,
+    [],
+  );
   const exportProgress = useCallback(
     (payload) => payload?.progress ?? payload?.progress_percent ?? 0,
-    []
+    [],
   );
   const exportStatus = useCallback((payload) => payload?.status, []);
   const exportMessage = useCallback(
-    (payload) => payload?.message || payload?.error_message || "Memproses data...",
-    []
+    (payload) =>
+      payload?.message || payload?.error_message || "Memproses data...",
+    [],
   );
   const exportResult = () => statusData?.result || statusData?.data || null;
   const shouldShowFilters = isNewExport || filterOption === "filtered";
@@ -147,22 +220,39 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
     return [
       ["Job ID", data.job_id || data.jobId],
       ["Status", data.status],
-      ["Progress", data.progress_percent !== undefined ? `${data.progress_percent}%` : data.progress],
+      [
+        "Progress",
+        data.progress_percent !== undefined
+          ? `${data.progress_percent}%`
+          : data.progress,
+      ],
       ["Processed Rows", data.processed_rows],
       ["Total Rows", data.total_rows],
       ["Row Count", data.row_count],
-      ["Elapsed Time", data.elapsed_seconds !== undefined ? formatSeconds(data.elapsed_seconds) : data.elapsedTime],
+      [
+        "Elapsed Time",
+        data.elapsed_seconds !== undefined
+          ? formatSeconds(data.elapsed_seconds)
+          : data.elapsedTime,
+      ],
       ["Requested Format", data.requested_format],
       ["Actual Format", data.actual_format],
       ["File Name", data.file_name || data.file?.filename],
       ["Download URL", data.download_url],
-      ["Expires In", data.expires_in_seconds ? `${data.expires_in_seconds} detik` : undefined],
+      [
+        "Expires In",
+        data.expires_in_seconds
+          ? `${data.expires_in_seconds} detik`
+          : undefined,
+      ],
       ["Requested By", data.requested_by],
       ["Export Type", data.metadata?.export_type],
       ["Fallback Reason", data.fallback_reason],
       ["Error Message", data.error_message],
       ["Message", data.message],
-    ].filter(([, value]) => value !== undefined && value !== null && value !== "");
+    ].filter(
+      ([, value]) => value !== undefined && value !== null && value !== "",
+    );
   };
 
   useEffect(() => {
@@ -200,7 +290,9 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
             setStep(3);
             return;
           } else if (exportStatus(payload) === "failed") {
-            setError(exportMessage(payload) || "Export gagal. Silakan coba lagi.");
+            setError(
+              exportMessage(payload) || "Export gagal. Silakan coba lagi.",
+            );
             setStep(4);
             return;
           }
@@ -292,7 +384,8 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
       }
 
       if (isNewExport) {
-        payload.requested_by = user?.name || user?.email || String(user?.cabang_id || "");
+        payload.requested_by =
+          user?.name || user?.email || String(user?.cabang_id || "");
       }
 
       const res = await exportFn(payload);
@@ -352,7 +445,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
 
     if (!latestStatus?.data?.file?.url) {
       setError(
-        "File belum siap diunduh. Silakan tunggu beberapa detik lalu coba lagi."
+        "File belum siap diunduh. Silakan tunggu beberapa detik lalu coba lagi.",
       );
       return;
     }
@@ -376,7 +469,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
       const contentType = response.headers.get("content-type") || "";
       if (
         !contentType.includes(
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         ) &&
         !contentType.includes("application/octet-stream")
       ) {
@@ -391,7 +484,8 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = latestStatus.data.file.filename || `rekap_${Date.now()}.xlsx`;
+      a.download =
+        latestStatus.data.file.filename || `rekap_${Date.now()}.xlsx`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -425,8 +519,8 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
             {type === "tagihan"
               ? "Tagihan"
               : type === "payments"
-              ? "Pembayaran"
-              : "Pesanan"}
+                ? "Pembayaran"
+                : "Pesanan"}
           </h2>
           {/* {step === 1 && (
             <button
@@ -497,7 +591,9 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                     />
                   </label>
                   <label className="label cursor-pointer">
-                    <span className="label-text">Download Berdasarkan Filter</span>
+                    <span className="label-text">
+                      Download Berdasarkan Filter
+                    </span>
                     <input
                       type="radio"
                       name="downloadOption"
@@ -572,18 +668,66 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                 {(type === "payments" || type === "orders") && (
                   <Select
                     isMulti
-                    options={statusOptions}
+                    options={
+                      type === "orders"
+                        ? orderStatusOptions
+                        : fallbackOrderStatusOptions
+                    }
                     value={selectedStatuses}
                     onChange={handleStatusChange}
                     placeholder="Pilih status..."
+                    isLoading={type === "orders" && loadingStatusOptions}
                     classNamePrefix="react-select"
                     className="dark:text-black"
+                    getOptionLabel={(option) => option.label}
+                    getOptionValue={(option) => option.value}
                     styles={{
                       control: (base) => ({
                         ...base,
                         borderColor: "#d1d5db",
                         borderRadius: "0.5rem",
                         padding: "2px",
+                        color: "#111827",
+                        backgroundColor: "#ffffff",
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        zIndex: 60,
+                        color: "#111827",
+                      }),
+                      menuList: (base) => ({
+                        ...base,
+                        color: "#111827",
+                        maxHeight: "260px",
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        color: "#111827",
+                        backgroundColor: state.isSelected
+                          ? "#dbeafe"
+                          : state.isFocused
+                            ? "#eff6ff"
+                            : "#ffffff",
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        color: "#111827",
+                      }),
+                      multiValue: (base) => ({
+                        ...base,
+                        backgroundColor: "#e5e7eb",
+                      }),
+                      multiValueLabel: (base) => ({
+                        ...base,
+                        color: "#111827",
+                      }),
+                      input: (base) => ({
+                        ...base,
+                        color: "#111827",
+                      }),
+                      placeholder: (base) => ({
+                        ...base,
+                        color: "#6b7280",
                       }),
                     }}
                   />
@@ -663,7 +807,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                         const currentYear = new Date().getFullYear();
                         const years = Array.from(
                           { length: currentYear - 2018 },
-                          (_, i) => 2019 + i
+                          (_, i) => 2019 + i,
                         );
                         const months = [
                           { value: 1, label: "Januari" },
@@ -776,7 +920,9 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                     className="grid grid-cols-[150px_1fr] gap-2 border-b border-gray-100 px-3 py-2 text-xs last:border-b-0"
                   >
                     <span className="font-medium text-gray-600">{label}</span>
-                    <span className="break-all text-gray-800">{String(value)}</span>
+                    <span className="break-all text-gray-800">
+                      {String(value)}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -795,7 +941,9 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                     className="grid grid-cols-[150px_1fr] gap-2 border-b border-gray-100 px-3 py-2 text-xs last:border-b-0"
                   >
                     <span className="font-medium text-gray-600">{label}</span>
-                    <span className="break-all text-gray-800">{String(value)}</span>
+                    <span className="break-all text-gray-800">
+                      {String(value)}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -813,7 +961,8 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
           <div className="space-y-4 text-center">
             <p className="text-red-600 font-semibold">Export Gagal</p>
             <p className="text-sm text-gray-600">
-              {statusData?.data?.message || "Silakan coba lagi beberapa saat lagi."}
+              {statusData?.data?.message ||
+                "Silakan coba lagi beberapa saat lagi."}
             </p>
             <button
               className="btn btn-primary w-full"

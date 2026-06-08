@@ -1,8 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   exportOrders,
+  exportOrdersResult,
   exportOrdersStatus,
   exportPaymentsReport,
+  exportPaymentResult,
   exportPaymentStatus,
   exportTagihanStatus,
   exportTagihanReport,
@@ -12,8 +14,6 @@ import { useAuthStore } from "../stores";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
-
-import { format } from "date-fns";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 const API_ORIGIN = new URL(API_BASE_URL).origin;
@@ -30,7 +30,7 @@ const statusOptions = [
 ];
 
 export default function DownloadExcel({ type = "orders", open, onClose }) {
-  const { token } = useAuthStore();
+  const { token, user } = useAuthStore();
 
   const exportFn =
     type === "tagihan"
@@ -46,8 +46,17 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
       ? exportPaymentStatus
       : exportOrdersStatus;
 
+  const resultFn =
+    type === "payments"
+      ? exportPaymentResult
+      : type === "orders"
+      ? exportOrdersResult
+      : null;
+  const isNewExport = type === "orders" || type === "payments" || type === "tagihan";
+  const canSelectFormat = type === "orders" || type === "payments";
+
   const [step, setStep] = useState(1);
-  const [filterOption, setFilterOption] = useState("all");
+  const [filterOption, setFilterOption] = useState(isNewExport ? "filtered" : "all");
   const [jobId, setJobId] = useState(null);
   const [statusData, setStatusData] = useState(null);
   const [error, setError] = useState(null);
@@ -59,6 +68,8 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState([]);
+  const [forwardedFilter, setForwardedFilter] = useState("");
+  const [exportFormat, setExportFormat] = useState("xlsx");
 
   const today = new Date();
   const [startDate, setStartDate] = useState(today);
@@ -67,31 +78,9 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
   const [year, setYear] = useState(new Date().getFullYear());
 
   const [tagihanFilterMode, setTagihanFilterMode] = useState("date");
+  const [tagihanInvoiceMode, setTagihanInvoiceMode] = useState("");
 
-  // Polling status export tiap 2 detik
-  useEffect(() => {
-    if (!jobId || step !== 2) return;
-
-    const interval = setInterval(async () => {
-      try {
-        const res = await checkStatusFn(jobId);
-        if (res?.data) {
-          setStatusData(res);
-          animateProgress(res.data.progress || 0);
-          if (res.data.status === "completed" || res.data.status === "failed") {
-            clearInterval(interval);
-            setStep(3);
-          }
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, [jobId, step]);
-
-  const animateProgress = (target) => {
+  const animateProgress = useCallback((target) => {
     cancelAnimationFrame(animationFrameRef.current);
     const duration = 500;
     const start = progressRef.current;
@@ -108,7 +97,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
     };
 
     animationFrameRef.current = requestAnimationFrame(animate);
-  };
+  }, []);
 
   // helper untuk tampilkan date dd/mm/yyyy
   // const formatDateToDisplay = (isoDate) => {
@@ -132,6 +121,119 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
     return date.toISOString().split("T")[0]; // hasil: "2025-11-08"
   };
 
+  const exportPayload = useCallback((response) => response?.data || response || {}, []);
+  const exportJobId = useCallback((payload) => payload?.jobId || payload?.job_id, []);
+  const exportProgress = useCallback(
+    (payload) => payload?.progress ?? payload?.progress_percent ?? 0,
+    []
+  );
+  const exportStatus = useCallback((payload) => payload?.status, []);
+  const exportMessage = useCallback(
+    (payload) => payload?.message || payload?.error_message || "Memproses data...",
+    []
+  );
+  const exportResult = () => statusData?.result || statusData?.data || null;
+  const shouldShowFilters = isNewExport || filterOption === "filtered";
+
+  const formatSeconds = (value) => {
+    if (value === undefined || value === null || value === "") return "-";
+    const number = Number(value);
+    return Number.isNaN(number) ? String(value) : `${number.toFixed(3)} detik`;
+  };
+
+  const detailRows = (data) => {
+    if (!data) return [];
+
+    return [
+      ["Job ID", data.job_id || data.jobId],
+      ["Status", data.status],
+      ["Progress", data.progress_percent !== undefined ? `${data.progress_percent}%` : data.progress],
+      ["Processed Rows", data.processed_rows],
+      ["Total Rows", data.total_rows],
+      ["Row Count", data.row_count],
+      ["Elapsed Time", data.elapsed_seconds !== undefined ? formatSeconds(data.elapsed_seconds) : data.elapsedTime],
+      ["Requested Format", data.requested_format],
+      ["Actual Format", data.actual_format],
+      ["File Name", data.file_name || data.file?.filename],
+      ["Download URL", data.download_url],
+      ["Expires In", data.expires_in_seconds ? `${data.expires_in_seconds} detik` : undefined],
+      ["Requested By", data.requested_by],
+      ["Export Type", data.metadata?.export_type],
+      ["Fallback Reason", data.fallback_reason],
+      ["Error Message", data.error_message],
+      ["Message", data.message],
+    ].filter(([, value]) => value !== undefined && value !== null && value !== "");
+  };
+
+  useEffect(() => {
+    if (!jobId || step !== 2) return;
+
+    let stopped = false;
+    let timeoutId;
+
+    const poll = async () => {
+      try {
+        const res = await checkStatusFn(jobId);
+        if (stopped) return;
+
+        const payload = exportPayload(res);
+        if (payload) {
+          setStatusData({ data: payload, progress: payload });
+
+          const nextJobId = exportJobId(payload);
+          if (nextJobId && String(nextJobId) !== String(jobId)) {
+            setJobId(nextJobId);
+          }
+
+          animateProgress(exportProgress(payload));
+
+          if (exportStatus(payload) === "completed") {
+            if (resultFn) {
+              const resultRes = await resultFn(nextJobId || jobId);
+              const resultPayload = exportPayload(resultRes);
+              setStatusData({
+                data: { ...payload, ...resultPayload },
+                progress: payload,
+                result: resultPayload,
+              });
+            }
+            setStep(3);
+            return;
+          } else if (exportStatus(payload) === "failed") {
+            setError(exportMessage(payload) || "Export gagal. Silakan coba lagi.");
+            setStep(4);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+
+      if (!stopped) {
+        const currentProgress = progressRef.current || 0;
+        timeoutId = setTimeout(poll, currentProgress >= 90 ? 6000 : 2500);
+      }
+    };
+
+    poll();
+
+    return () => {
+      stopped = true;
+      clearTimeout(timeoutId);
+    };
+  }, [
+    animateProgress,
+    checkStatusFn,
+    exportJobId,
+    exportMessage,
+    exportPayload,
+    exportProgress,
+    exportStatus,
+    jobId,
+    resultFn,
+    step,
+  ]);
+
   const handleStartExport = async () => {
     try {
       // const payload =
@@ -152,7 +254,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
       //     : {};
       let payload = {};
 
-      if (filterOption === "filtered") {
+      if (shouldShowFilters) {
         if (type === "tagihan") {
           // payload =
           //   startDate && endDate ? { startDate, endDate } : { month, year };
@@ -164,32 +266,42 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
           } else {
             payload = { month, year };
           }
-          // Tambahkan no_invoice jika ada
-          if (search) {
+          if (tagihanInvoiceMode === "filled") {
+            payload.no_invoice = "filled";
+          } else if (tagihanInvoiceMode === "specific" && search) {
             payload.no_invoice = search;
           }
         } else if (type === "payments") {
           // 💰 PAYMENTS
           payload = {
-            search,
-            is_forwarded: statusFilter,
-            startDate,
-            endDate,
+            format: exportFormat,
+            status: statusFilter,
+            is_forwarded: forwardedFilter,
+            startDate: formatDate(startDate),
+            endDate: formatDate(endDate),
           };
         } else {
           // 📦 ORDERS
           payload = {
-            search,
+            format: exportFormat,
             status: statusFilter,
-            startDate,
-            endDate,
+            startDate: formatDate(startDate),
+            endDate: formatDate(endDate),
           };
         }
       }
 
+      if (isNewExport) {
+        payload.requested_by = user?.name || user?.email || String(user?.cabang_id || "");
+      }
+
       const res = await exportFn(payload);
-      if (res?.data?.jobId) {
-        setJobId(res.data.jobId);
+      const payloadData = exportPayload(res);
+      const nextJobId = exportJobId(payloadData);
+
+      if (nextJobId) {
+        setJobId(nextJobId);
+        setStatusData({ data: payloadData });
         setStep(2);
       }
     } catch (err) {
@@ -203,14 +315,39 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
 
     if (jobId) {
       try {
-        const res = await checkStatusFn(jobId);
-        if (res?.data) {
-          latestStatus = res;
-          setStatusData(res);
+        if (resultFn) {
+          const resultRes = await resultFn(jobId);
+          const resultPayload = exportPayload(resultRes);
+          latestStatus = {
+            ...latestStatus,
+            data: { ...(latestStatus?.data || {}), ...resultPayload },
+            result: resultPayload,
+          };
+          setStatusData(latestStatus);
+        } else {
+          const res = await checkStatusFn(jobId);
+          const payload = exportPayload(res);
+          if (payload) {
+            latestStatus = { data: payload };
+            setStatusData(latestStatus);
+          }
         }
       } catch (err) {
         console.error(err);
       }
+    }
+
+    const latestData = latestStatus?.result || latestStatus?.data;
+
+    if (latestData?.download_url) {
+      const a = document.createElement("a");
+      a.href = latestData.download_url;
+      a.download = latestData.file_name || `export_${jobId}.${exportFormat}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      onClose();
+      return;
     }
 
     if (!latestStatus?.data?.file?.url) {
@@ -284,7 +421,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">
-            Download Recap Excel{" "}
+            Download Rekap{" "}
             {type === "tagihan"
               ? "Tagihan"
               : type === "payments"
@@ -312,42 +449,95 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
 
         {step === 1 && (
           <div className="space-y-4">
-            <p>Pilih metode download:</p>
-            <div className="form-control">
-              <label className="label cursor-pointer mr-4">
-                <span className="label-text">Download Semua Rekap</span>
-                <input
-                  type="radio"
-                  name="downloadOption"
-                  className="radio checked:bg-blue-500 "
-                  checked={filterOption === "all"}
-                  onChange={() => setFilterOption("all")}
-                />
-              </label>
-              <label className="label cursor-pointer">
-                <span className="label-text">Download Berdasarkan Filter</span>
-                <input
-                  type="radio"
-                  name="downloadOption"
-                  className="radio checked:bg-blue-500"
-                  checked={filterOption === "filtered"}
-                  onChange={() => setFilterOption("filtered")}
-                />
-              </label>
-            </div>
+            {canSelectFormat && (
+              <div className="grid grid-cols-1 gap-2">
+                <label className="text-sm font-medium">Format File</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="flex cursor-pointer items-center gap-2 rounded border border-gray-200 px-3 py-2">
+                    <input
+                      type="radio"
+                      name={`exportFormat-${type}`}
+                      className="radio radio-sm checked:bg-blue-500"
+                      checked={exportFormat === "csv"}
+                      onChange={() => setExportFormat("csv")}
+                    />
+                    <span className="text-sm">CSV</span>
+                  </label>
+                  <label className="flex cursor-pointer items-center gap-2 rounded border border-gray-200 px-3 py-2">
+                    <input
+                      type="radio"
+                      name={`exportFormat-${type}`}
+                      className="radio radio-sm checked:bg-blue-500"
+                      checked={exportFormat === "xlsx"}
+                      onChange={() => setExportFormat("xlsx")}
+                    />
+                    <span className="text-sm">XLSX</span>
+                  </label>
+                </div>
+                {exportFormat === "xlsx" && (
+                  <p className="text-xs text-amber-600">
+                    XLSX maksimal 1 juta baris.
+                  </p>
+                )}
+              </div>
+            )}
 
-            {filterOption === "filtered" && (
+            {!isNewExport && (
+              <>
+                <p>Pilih metode download:</p>
+                <div className="form-control">
+                  <label className="label cursor-pointer mr-4">
+                    <span className="label-text">Download Semua Rekap</span>
+                    <input
+                      type="radio"
+                      name="downloadOption"
+                      className="radio checked:bg-blue-500 "
+                      checked={filterOption === "all"}
+                      onChange={() => setFilterOption("all")}
+                    />
+                  </label>
+                  <label className="label cursor-pointer">
+                    <span className="label-text">Download Berdasarkan Filter</span>
+                    <input
+                      type="radio"
+                      name="downloadOption"
+                      className="radio checked:bg-blue-500"
+                      checked={filterOption === "filtered"}
+                      onChange={() => setFilterOption("filtered")}
+                    />
+                  </label>
+                </div>
+              </>
+            )}
+
+            {shouldShowFilters && (
               <div className="grid grid-cols-1 gap-3">
-                <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder={
-                    type === "tagihan"
-                      ? "No Tagihan"
-                      : "Cari (order_id / invoice / nama perusahaan / NPSN)"
-                  }
-                  className="input input-bordered w-full  dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
+                {type === "tagihan" && (
+                  <div className="grid grid-cols-1 gap-2">
+                    <select
+                      value={tagihanInvoiceMode}
+                      onChange={(e) => {
+                        setTagihanInvoiceMode(e.target.value);
+                        if (e.target.value !== "specific") {
+                          setSearch("");
+                        }
+                      }}
+                      className="select select-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">Belum Ada No Tagihan</option>
+                      <option value="filled">No Tagihan Sudah Terisi</option>
+                      <option value="specific">No Tagihan Spesifik</option>
+                    </select>
+                    {tagihanInvoiceMode === "specific" && (
+                      <input
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="No Tagihan"
+                        className="input input-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    )}
+                  </div>
+                )}
 
                 {/* {type === "payments" ? (
                   <select
@@ -379,19 +569,7 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                   />
                 )} */}
 
-                {type === "payments" ? (
-                  // 💰 FILTER UNTUK PAYMENTS
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="select select-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">Semua</option>
-                    <option value="false">Diteruskan</option>
-                    <option value="true">Selesai</option>
-                  </select>
-                ) : type === "orders" ? (
-                  // 📦 FILTER UNTUK ORDERS
+                {(type === "payments" || type === "orders") && (
                   <Select
                     isMulti
                     options={statusOptions}
@@ -409,7 +587,19 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
                       }),
                     }}
                   />
-                ) : null}
+                )}
+
+                {type === "payments" && (
+                  <select
+                    value={forwardedFilter}
+                    onChange={(e) => setForwardedFilter(e.target.value)}
+                    className="select select-bordered w-full dark:text-black dark:bg-white dark:outline-1 dark:outline-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Semua Status Forward</option>
+                    <option value="false">Belum Diteruskan</option>
+                    <option value="true">Sudah Diteruskan</option>
+                  </select>
+                )}
 
                 {type === "tagihan" && (
                   <div className="space-y-4">
@@ -568,19 +758,75 @@ export default function DownloadExcel({ type = "orders", open, onClose }) {
             </div>
             <p className="text-center text-sm">{visibleProgress}%</p>
             <p className="text-sm text-gray-500">
-              {statusData?.data?.message || "Memproses data..."}
+              {exportMessage(statusData?.progress || statusData?.data) ||
+                (visibleProgress >= 90
+                  ? "Menyelesaikan dan menyiapkan file Excel..."
+                  : "Memproses data...")}
             </p>
+            {statusData?.data?.elapsed_seconds !== undefined && (
+              <p className="text-xs text-gray-500">
+                Elapsed time: {formatSeconds(statusData.data.elapsed_seconds)}
+              </p>
+            )}
+            {detailRows(statusData?.data).length > 0 && (
+              <div className="max-h-44 overflow-auto rounded border border-gray-200 text-left">
+                {detailRows(statusData.data).map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="grid grid-cols-[150px_1fr] gap-2 border-b border-gray-100 px-3 py-2 text-xs last:border-b-0"
+                  >
+                    <span className="font-medium text-gray-600">{label}</span>
+                    <span className="break-all text-gray-800">{String(value)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
         {step === 3 && (
           <div className="space-y-4 text-center">
             <p className="text-green-600 font-semibold">Export Selesai!</p>
+            {detailRows(exportResult()).length > 0 && (
+              <div className="max-h-64 overflow-auto rounded border border-gray-200 text-left">
+                {detailRows(exportResult()).map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="grid grid-cols-[150px_1fr] gap-2 border-b border-gray-100 px-3 py-2 text-xs last:border-b-0"
+                  >
+                    <span className="font-medium text-gray-600">{label}</span>
+                    <span className="break-all text-gray-800">{String(value)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             <button
               className="btn btn-success w-full text-white"
               onClick={handleDownload}
             >
-              Unduh File Excel
+              Unduh File {isNewExport ? exportFormat.toUpperCase() : "Excel"}
+            </button>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="space-y-4 text-center">
+            <p className="text-red-600 font-semibold">Export Gagal</p>
+            <p className="text-sm text-gray-600">
+              {statusData?.data?.message || "Silakan coba lagi beberapa saat lagi."}
+            </p>
+            <button
+              className="btn btn-primary w-full"
+              onClick={() => {
+                setError(null);
+                setStatusData(null);
+                setJobId(null);
+                setVisibleProgress(0);
+                progressRef.current = 0;
+                setStep(1);
+              }}
+            >
+              Coba Lagi
             </button>
           </div>
         )}

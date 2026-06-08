@@ -2,6 +2,10 @@ import axios from "../lib/axios";
 
 const API_ORIGIN = new URL(import.meta.env.VITE_API_URL).origin;
 
+const noCacheConfig = () => ({
+    params: { _ts: Date.now() },
+});
+
 export const fetchOrders = async ({
     page = 1,
     limit = 10,
@@ -271,7 +275,7 @@ export const fetchOrdersReport = async ({
 export const exportTagihanStatus = async (jobId) => {
     if (!jobId) throw new Error("❌ jobId wajib diisi untuk cek status export report");
 
-    const res = await axios.get(`payments/report-eureka/export/status/${jobId}`);
+    const res = await axios.get(`payments/report-eureka/export/status/${jobId}`, noCacheConfig());
     return res.data;
 };
 
@@ -303,56 +307,72 @@ export const exportTagihanReport = async ({
 };
 
 export const exportPaymentStatus = async (id) => {
-    const res = await axios.get(`payments/orders-report/export/status/${id}`);
+    const res = await axios.get(`payments/exports/${id}/progress`, noCacheConfig());
+    return res.data;
+};
+
+export const exportPaymentResult = async (id) => {
+    const res = await axios.get(`payments/exports/${id}/result`, noCacheConfig());
     return res.data;
 };
 
 export const exportPaymentsReport = async ({
-    year = "",
-    month = "",
+    format = "csv",
     startDate = "",
     endDate = "",
+    status = "",
     order_status_id = "",
-    is_forwarded = "", // ✅ tambahan
-    search = "",
+    is_forwarded = "",
+    requested_by = "",
 }) => {
-    const params = new URLSearchParams();
+    const filters = {};
+    const selectedStatus = status || order_status_id;
 
-    if (year) params.append("year", year);
-    if (month) params.append("month", month);
-    if (startDate) params.append("startDate", startDate);
-    if (endDate) params.append("endDate", endDate);
-    if (order_status_id) params.append("order_status_id", order_status_id);
-    if (is_forwarded) params.append("is_forwarded", is_forwarded);
-    if (search) params.append("search", search);
+    if (startDate) filters.start_date = startDate;
+    if (endDate) filters.end_date = endDate;
+    if (selectedStatus) filters.status = selectedStatus;
+    if (is_forwarded !== "" && is_forwarded !== undefined && is_forwarded !== null) {
+        filters.is_forwarded = is_forwarded;
+    }
 
-    const res = await axios.post(`payments/orders-report/export?${params.toString()}`);
+    const res = await axios.post("payments/exports", {
+        format,
+        filters,
+        ...(requested_by ? { requested_by } : {}),
+    });
 
-    return res.data; // hasilnya JSON berisi jobId, bukan file blob
+    return res.data;
 };
 
 export const exportOrders = async ({
-    search = "",
+    format = "csv",
     status = "",
     startDate = "",
     endDate = "",
+    requested_by = "",
 } = {}) => {
-    // Siapkan body
-    const body = {};
+    const filters = {};
 
-    if (search) body.search = search;
-    if (status) body.status = status;
-    if (startDate) body.startDate = startDate;
-    if (endDate) body.endDate = endDate;
+    if (startDate) filters.start_date = startDate;
+    if (endDate) filters.end_date = endDate;
+    if (status) filters.status = status;
 
-    // Jika semua kosong, tetap kirim {} (sesuai ketentuan)
-    const res = await axios.post("orders/export", Object.keys(body).length ? body : {});
+    const res = await axios.post("orders/exports", {
+        format,
+        filters,
+        ...(requested_by ? { requested_by } : {}),
+    });
 
     return res.data;
 };
 
 export const exportOrdersStatus = async (id) => {
-    const res = await axios.get(`orders/export/${id}`);
+    const res = await axios.get(`orders/exports/${id}/progress`, noCacheConfig());
+    return res.data;
+};
+
+export const exportOrdersResult = async (id) => {
+    const res = await axios.get(`orders/exports/${id}/result`, noCacheConfig());
     return res.data;
 };
 
@@ -383,7 +403,7 @@ export const exportProviderTransactions = async ({ mall_id = [], year }) => {
 export const checkProviderExportStatus = async (jobId) => {
     if (!jobId) throw new Error("Job ID is required to check export status");
 
-    const res = await axios.get(`order-all-seller/export/${jobId}`);
+    const res = await axios.get(`order-all-seller/export/${jobId}`, noCacheConfig());
     return res.data;
 };
 
